@@ -1,0 +1,68 @@
+name: build
+
+# Builds PureVox for Windows, macOS (Intel + Apple Silicon), and Linux.
+# You can't cross-compile a .app/.dmg from Linux or a real .msi from
+# non-Windows reliably — Tauri needs to build on each real OS. GitHub
+# Actions gives you all three for free via this matrix, no need to own
+# a Mac or a Windows machine yourself.
+#
+# Trigger: push a tag like "v0.1.0" (see the on.push.tags line below),
+# or run it manually from the Actions tab (workflow_dispatch).
+#
+# This project has no package.json / npm frontend build step (plain
+# HTML/CSS/JS), so this workflow skips Node entirely and just uses Rust
+# + the Tauri CLI directly.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            target: 'aarch64-apple-darwin' # Apple Silicon (M1 and later)
+          - platform: 'macos-latest'
+            target: 'x86_64-apple-darwin'  # Intel Macs
+          - platform: 'ubuntu-22.04'
+            target: ''
+          - platform: 'windows-latest'
+            target: ''
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux system dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential curl wget file libssl-dev libgtk-3-dev
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2.0.0" --locked
+
+      - name: Build
+        working-directory: ./src-tauri
+        run: cargo tauri build ${{ matrix.target != '' && format('--target {0}', matrix.target) || '' }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: purevox-${{ matrix.platform }}-${{ matrix.target || 'default' }}
+          path: |
+            src-tauri/target/**/release/bundle/**
+          if-no-files-found: error

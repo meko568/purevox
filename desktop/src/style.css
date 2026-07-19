@@ -1,0 +1,398 @@
+/* ==== PureVox palette — same tokens as the website ==== */
+:root {
+  --bg: #0A1210;
+  --panel: #101B19;
+  --panel-raised: #152321;
+  --border: #445059;
+  --border-soft: rgba(68, 80, 89, 0.4);
+  --accent: #E8B85C;
+  --accent-dim: rgba(232, 184, 92, 0.14);
+  --danger: #C2564B;
+  --danger-dim: rgba(194, 86, 75, 0.14);
+  --text: #E9EEEE;
+  --text-dim: #8CA0A6;
+  --font-display: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-body: "Manrope", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+}
+
+/* ---- header / wordmark ---- */
+.topbar {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.topbar h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+.logo-bars span {
+  width: 3px;
+  background: var(--accent);
+  border-radius: 1px;
+  display: inline-block;
+}
+.logo-bars span:nth-child(1) { height: 60%; }
+.logo-bars span:nth-child(2) { height: 100%; }
+.logo-bars span:nth-child(3) { height: 40%; }
+.logo-bars span:nth-child(4) { height: 80%; }
+
+.tagline {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* ---- toolbar ---- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+}
+
+.tool-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border-soft);
+  margin: 0 2px;
+}
+
+button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 7px;
+  background: var(--panel-raised);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  color: var(--text-dim);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tool-btn--danger:hover:not(:disabled) {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.tool-toggle.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tool-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.tool-field input {
+  width: 76px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  padding: 9px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 7px;
+  color: var(--text);
+  min-height: 36px;
+}
+
+/* remove native number-input spinner arrows everywhere — replaced with plain fields */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tool-field input:focus,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---- panels ---- */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.panel h2 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin: 0 0 12px;
+}
+
+/* ---- job list ---- */
+.job-list { display: flex; flex-direction: column; gap: 6px; }
+
+.job-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 7px;
+  font-size: 12px;
+}
+
+.job-row.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.job-row .job-name {
+  font-family: var(--font-display);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.job-row .job-progress { color: var(--text-dim); }
+
+.empty-hint { color: var(--text-dim); font-size: 13px; margin: 0; }
+
+/* ---- new-job panel ---- */
+.mode-switch { display: flex; gap: 6px; margin-bottom: 12px; }
+
+.mode-btn { flex: 1; background: var(--bg); }
+.mode-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+.hidden { display: none !important; }
+
+.mode-body.hidden { display: none; }
+
+.mode-body button { width: 100%; margin-bottom: 6px; }
+
+.field-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 10px 0 6px;
+}
+
+.output-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  align-items: stretch;
+}
+
+.text-input {
+  flex: 1 1 auto;
+  min-width: 0; /* critical: without this, flex children refuse to shrink below content size and can push siblings to near-zero width */
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 14px;
+  padding: 12px 14px;
+  min-height: 42px;
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.text-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.output-row button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+#btn-audio-only { width: auto; }
+#btn-save-default-folder { width: auto; }
+
+.batch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.batch-row .batch-in-name {
+  flex: 0 0 40%;
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-row .text-input { flex: 1; }
+
+.overwrite-warning {
+  background: var(--danger-dim);
+  border: 1px solid var(--danger);
+  border-radius: 7px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  font-size: 12px;
+}
+
+.overwrite-warning p { margin: 0 0 6px; color: var(--text); }
+
+.override-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--danger);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-box {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--danger);
+  border-radius: 5px;
+  background: var(--bg);
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.custom-checkbox:checked + .checkbox-box {
+  background: var(--danger);
+}
+
+.custom-checkbox:checked + .checkbox-box::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox:focus-visible + .checkbox-box {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.log-header h2 { margin: 0; }
+.log-header button { padding: 5px 10px; font-size: 11px; }
+
+.path-list {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0 0 12px;
+  word-break: break-all;
+}
+
+.run-btn {
+  width: 100%;
+  margin-top: 6px;
+  background: var(--accent);
+  color: #1a1406;
+  border: 1px solid var(--accent);
+  font-size: 14px;
+  padding: 11px;
+}
+
+.run-btn:hover:not(:disabled) { filter: brightness(1.08); }
+.run-btn:disabled { background: var(--panel-raised); color: var(--text-dim); border-color: var(--border-soft); }
+
+/* ---- log panel ---- */
+.log-panel { margin-top: 16px; }
+
+#log {
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 7px;
+  padding: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+@media (max-width: 620px) {
+  .panels { grid-template-columns: 1fr; }
+}

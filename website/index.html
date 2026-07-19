@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PureVox — Strip the noise. Keep the voice.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <span class="logo-mark">PV</span>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#download" class="nav-cta">Download</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-stage">
+    <div class="bars" id="bars"></div>
+    <div class="blade" id="blade"></div>
+  </div>
+
+  <div class="hero-content">
+    <h1 class="wordmark" id="wordmark" aria-label="PUREVOX">
+      <span>P</span><span>U</span><span>R</span><span>E</span><span>V</span><span>O</span><span>X</span>
+    </h1>
+    <p class="tagline" id="tagline">Cuts the background music out of any video. Keeps every word.</p>
+    <div class="hero-actions" id="hero-actions">
+      <a href="#download" class="btn btn-primary">Download free</a>
+      <a href="https://github.com" class="btn btn-ghost" target="_blank" rel="noopener">View source</a>
+    </div>
+  </div>
+
+  <div class="scroll-cue" id="scroll-cue">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="section-head">
+    <span class="eyebrow">01 — 02 — 03</span>
+    <h2>Three steps. Zero cloud.</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01</span>
+      <h3>Drop the file in</h3>
+      <p>Point PureVox at any video — a lecture recap, a gameplay clip, an anime episode with a loud OST underneath the dialogue.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">02</span>
+      <h3>AI separates the signal</h3>
+      <p>Demucs splits the audio track into stems locally on your machine — music, effects, and voice — no upload, no server.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">03</span>
+      <h3>Get your clean track back</h3>
+      <p>PureVox recombines the video with the isolated voice stem. Background music: gone. Dialogue: untouched.</p>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-head">
+    <span class="eyebrow">Built for the edge cases UVR forgets</span>
+    <h2>Made for real machines, not just workstations</h2>
+  </div>
+  <div class="feature-grid">
+    <div class="feature">
+      <h3>Runs offline</h3>
+      <p>Everything happens on your device. Your footage never leaves your disk.</p>
+    </div>
+    <div class="feature">
+      <h3>Low-spec friendly</h3>
+      <p>Automatic chunking and model selection keep memory use in check on older hardware.</p>
+    </div>
+    <div class="feature">
+      <h3>Resumable jobs</h3>
+      <p>Processing a two-hour file and your laptop dies? Pick the job back up where it left off.</p>
+    </div>
+    <div class="feature">
+      <h3>Free & open source</h3>
+      <p>No subscription, no watermark. Support development with a donation if PureVox saves you time.</p>
+    </div>
+  </div>
+</section>
+
+<section class="download" id="download">
+  <div class="section-head">
+    <span class="eyebrow">Get PureVox</span>
+    <h2>Pick your platform</h2>
+  </div>
+  <div class="download-grid">
+    <a href="#" class="download-card">
+      <span class="os-name">Linux</span>
+      <span class="os-file">.AppImage</span>
+    </a>
+    <a href="#" class="download-card">
+      <span class="os-name">Windows</span>
+      <span class="os-file">.msi</span>
+    </a>
+    <a href="#" class="download-card">
+      <span class="os-name">macOS</span>
+      <span class="os-file">.dmg</span>
+    </a>
+    <a href="#" class="download-card">
+      <span class="os-name">CLI</span>
+      <span class="os-file">pip / script</span>
+    </a>
+  </div>
+  <p class="download-note">Prefer the command line? <a href="#">Read the CLI docs →</a></p>
+</section>
+
+<footer class="footer">
+  <span>PureVox — built by a solo dev who got tired of loud anime OSTs.</span>
+  <div class="footer-links">
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    <a href="#">Ko-fi</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

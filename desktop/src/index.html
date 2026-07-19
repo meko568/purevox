@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PureVox</title>
+  <!-- Fonts load from CDN if online; falls back to system mono/sans offline -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1>
+        <span class="logo-bars"><span></span><span></span><span></span><span></span></span>
+        PureVox
+      </h1>
+      <span class="tagline">strip the noise, keep the voice</span>
+    </header>
+
+    <div class="toolbar" role="toolbar" aria-label="Job controls">
+      <button id="btn-jobs" class="tool-btn" title="List pending jobs (-j/--jobs)">Jobs</button>
+      <button id="btn-resume" class="tool-btn" disabled title="Resume selected job(s) (-r/--resume)">Resume</button>
+      <button id="btn-delete" class="tool-btn tool-btn--danger" disabled title="Delete selected job(s) (-x/--delete)">Delete</button>
+      <button id="btn-stop" class="tool-btn tool-btn--danger" disabled title="Kill the currently running job">Stop</button>
+
+      <div class="tool-sep"></div>
+
+      <button id="btn-dryrun" class="tool-btn tool-toggle" title="Preview only, no processing (-n/--dry-run)">Dry Run</button>
+
+      <div class="tool-sep"></div>
+
+      <label class="tool-field">Chunk (min)
+        <input id="chunk-min" type="number" min="1" placeholder="auto" title="-c/--chunk" />
+      </label>
+      <label class="tool-field">Run limit
+        <input id="run-limit" type="number" min="1" placeholder="all" title="-q/--run-limit" />
+      </label>
+    </div>
+
+    <main class="panels">
+      <section class="panel">
+        <h2>Job Queue</h2>
+        <div id="job-list" class="job-list">
+          <p class="empty-hint">No jobs listed yet — click "Jobs" above.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>New Job</h2>
+
+        <div class="mode-switch">
+          <button id="mode-files" class="mode-btn active">Files</button>
+          <button id="mode-folder" class="mode-btn">Folder (-d/--dir)</button>
+        </div>
+
+        <div id="files-mode" class="mode-body">
+          <button id="pick-input">Choose Input File(s)</button>
+          <p id="input-list" class="path-list">No input selected.</p>
+
+          <!-- single input: one output name -->
+          <div id="single-output-block">
+            <label class="field-label">Output folder
+              <input id="single-output-folder" type="text" class="text-input" placeholder="/path/to/output/folder (optional)" />
+            </label>
+            <label class="field-label">Output filename
+              <div class="output-row">
+                <input id="output-name" type="text" class="text-input" placeholder="output" />
+                <button id="btn-audio-only" class="tool-btn tool-toggle" title="Save vocals only, no video (.mp3 instead of .mp4)">Audio Only</button>
+              </div>
+            </label>
+            <p id="output-preview" class="path-list">Will save as: output.mp4</p>
+          </div>
+
+          <!-- several inputs: folder path + one editable filename per input -->
+          <div id="batch-output-block" class="hidden">
+            <label class="field-label">Output folder path
+              <div class="output-row">
+                <input id="output-folder-path" type="text" class="text-input" placeholder="/path/to/output/folder" />
+                <button id="btn-save-default-folder" class="tool-btn" title="Remember this folder as default">Save as default</button>
+              </div>
+            </label>
+            <div id="batch-name-rows"></div>
+          </div>
+        </div>
+
+        <div id="folder-mode" class="mode-body hidden">
+          <button id="pick-in-dir">Choose Input Folder</button>
+          <p id="in-dir-path" class="path-list">No folder selected.</p>
+
+          <label class="field-label">Output folder name
+            <input id="out-dir-name" type="text" class="text-input" placeholder="clean/ (or a full path)" />
+          </label>
+        </div>
+
+        <div id="overwrite-warning" class="overwrite-warning hidden">
+          <p id="overwrite-text"></p>
+          <label class="override-check">
+            <input type="checkbox" id="override-confirm" class="custom-checkbox" />
+            <span class="checkbox-box"></span>
+            Overwrite existing file(s)
+          </label>
+        </div>
+
+        <button id="run-btn" class="run-btn" disabled>Remove Music</button>
+      </section>
+    </main>
+
+    <section class="panel log-panel">
+      <div class="log-header">
+        <h2>Output</h2>
+        <button id="btn-clear-log" class="tool-btn">Clear</button>
+      </div>
+      <pre id="log">Ready.</pre>
+    </section>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
