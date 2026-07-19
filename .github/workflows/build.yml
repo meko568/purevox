@@ -1,17 +1,12 @@
 name: build
 
-# Builds PureVox for Windows, macOS (Intel + Apple Silicon), and Linux.
-# You can't cross-compile a .app/.dmg from Linux or a real .msi from
-# non-Windows reliably — Tauri needs to build on each real OS. GitHub
-# Actions gives you all three for free via this matrix, no need to own
-# a Mac or a Windows machine yourself.
+# Builds PureVox for Windows, macOS (Intel + Apple Silicon), and Linux,
+# and publishes the results to a GitHub Release. "ubuntu-22.04" below is
+# just the build MACHINE — the resulting AppImage runs on virtually any
+# Linux distro, and .deb/.rpm cover the rest (bundle.targets: "all" in
+# tauri.conf.json). This isn't Ubuntu-only software.
 #
-# Trigger: push a tag like "v0.1.0" (see the on.push.tags line below),
-# or run it manually from the Actions tab (workflow_dispatch).
-#
-# This project has no package.json / npm frontend build step (plain
-# HTML/CSS/JS), so this workflow skips Node entirely and just uses Rust
-# + the Tauri CLI directly.
+# Trigger: push a tag like "v0.1.0", or run manually from the Actions tab.
 
 on:
   push:
@@ -20,7 +15,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  publish-tauri:
     permissions:
       contents: write
     strategy:
@@ -28,41 +23,47 @@ jobs:
       matrix:
         include:
           - platform: "macos-latest"
-            target: "aarch64-apple-darwin" # Apple Silicon (M1 and later)
+            args: "--target aarch64-apple-darwin" # Apple Silicon
           - platform: "macos-latest"
-            target: "x86_64-apple-darwin" # Intel Macs
+            args: "--target x86_64-apple-darwin" # Intel Macs
           - platform: "ubuntu-22.04"
-            target: ""
+            args: ""
           - platform: "windows-latest"
-            target: ""
+            args: ""
 
     runs-on: ${{ matrix.platform }}
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install Linux system dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential curl wget file libssl-dev libgtk-3-dev
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libwebkit2gtk-4.0-dev \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            build-essential \
+            curl wget file \
+            libssl-dev
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^2.0.0" --locked
-
-      - name: Build
-        working-directory: ./desktop/src-tauri
-        run: cargo tauri build ${{ matrix.target != '' && format('--target {0}', matrix.target) || '' }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: purevox-${{ matrix.platform }}-${{ matrix.target || 'default' }}
-          path: |
-            desktop/src-tauri/target/**/release/bundle/**
-          if-no-files-found: error
+          projectPath: desktop
+          tagName: ${{ github.ref_name }}
+          releaseName: "PureVox ${{ github.ref_name }}"
+          releaseBody: "Download the installer for your platform below."
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
