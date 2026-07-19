@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PureVox — Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="index.html"><span class="logo-mark">PV</span></a>
+    <nav class="nav-links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#features">Features</a>
+      <a href="docs.html">Docs</a>
+      <a href="index.html#download" class="nav-cta">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="docs-page">
+  <h1>PureVox docs</h1>
+  <p class="docs-sub">CLI and desktop app — install, flags, and usage. Everything runs locally, nothing uploads anywhere.</p>
+
+  <h2>Install the CLI</h2>
+  <div class="platform-tabs">
+    <button class="tab-btn active" data-tab="cli-linux">Linux</button>
+    <button class="tab-btn" data-tab="cli-macos">macOS</button>
+    <button class="tab-btn" data-tab="cli-windows">Windows</button>
+  </div>
+
+  <div class="tab-panel active" id="cli-linux">
+    <p>Needs Demucs, ffmpeg/ffprobe, and Python (for pipx). Install, then put <code>purevox</code> on your <code>PATH</code>.</p>
+    <pre><button class="copy-btn">Copy</button><code>sudo apt install python3-pip ffmpeg
+pip install --user pipx
+pipx ensurepath
+pipx install demucs
+
+chmod +x purevox
+sudo mv purevox /usr/local/bin/</code></pre>
+    <p>Verify:</p>
+    <pre><button class="copy-btn">Copy</button><code>purevox --help</code></pre>
+  </div>
+
+  <div class="tab-panel" id="cli-macos">
+    <p>Use Homebrew for ffmpeg and pipx, then install Demucs and add <code>purevox</code> to your <code>PATH</code>.</p>
+    <pre><button class="copy-btn">Copy</button><code>brew install ffmpeg pipx
+pipx ensurepath
+pipx install demucs
+
+chmod +x purevox
+sudo mv purevox /usr/local/bin/</code></pre>
+    <p>Verify:</p>
+    <pre><button class="copy-btn">Copy</button><code>purevox --help</code></pre>
+    <div class="note-box">Apple Silicon and Intel both work — Demucs runs on CPU if there's no CUDA GPU, just slower.</div>
+  </div>
+
+  <div class="tab-panel" id="cli-windows">
+    <p>purevox is a bash script, so native cmd/PowerShell can't run it directly. Use <strong>WSL</strong> (recommended) or Git Bash.</p>
+    <pre><button class="copy-btn">Copy</button><code>wsl --install
+# reboot, open the new Ubuntu shell, then:
+sudo apt update && sudo apt install python3-pip ffmpeg
+pip install --user pipx
+pipx ensurepath
+pipx install demucs
+
+chmod +x purevox
+sudo mv purevox /usr/local/bin/</code></pre>
+    <div class="note-box">Inside WSL your Windows drives are mounted at <code>/mnt/c/...</code>, so you can point <code>-i</code>/<code>-o</code> straight at files in your normal Windows folders.</div>
+  </div>
+
+  <h2>Install the desktop app</h2>
+  <div class="platform-tabs">
+    <button class="tab-btn active" data-tab="app-linux">Linux</button>
+    <button class="tab-btn" data-tab="app-macos">macOS</button>
+    <button class="tab-btn" data-tab="app-windows">Windows</button>
+  </div>
+
+  <div class="tab-panel active" id="app-linux">
+    <p>Grab the .AppImage / .deb / .rpm from the Download section once a release is published, or build from source:</p>
+    <pre><button class="copy-btn">Copy</button><code>sudo apt install libwebkit2gtk-4.1-dev libglib2.0-dev libgtk-3-dev \
+  libayatana-appindicator3-dev librsvg2-dev patchelf build-essential \
+  curl wget file libssl-dev
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo install tauri-cli --version "^2.0.0"
+
+git clone https://github.com/meko568/purevox.git
+cd purevox/desktop
+cargo tauri build</code></pre>
+    <p>The built .AppImage/.deb lands in <code>desktop/src-tauri/target/release/bundle/</code>.</p>
+  </div>
+
+  <div class="tab-panel" id="app-macos">
+    <p>Grab the .dmg from the Download section once a release is published, or build from source:</p>
+    <pre><button class="copy-btn">Copy</button><code>xcode-select --install
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo install tauri-cli --version "^2.0.0"
+
+git clone https://github.com/meko568/purevox.git
+cd purevox/desktop
+cargo tauri build</code></pre>
+    <p>For a universal build (Intel + Apple Silicon):</p>
+    <pre><button class="copy-btn">Copy</button><code>rustup target add aarch64-apple-darwin x86_64-apple-darwin
+cargo tauri build --target universal-apple-darwin</code></pre>
+    <p>The built .dmg/.app lands in <code>desktop/src-tauri/target/release/bundle/</code>.</p>
+  </div>
+
+  <div class="tab-panel" id="app-windows">
+    <div class="note-box">Windows desktop build isn't published yet — build currently fails locally and is being fixed. Use the CLI via WSL in the meantime.</div>
+  </div>
+
+  <h2>Basic CLI usage</h2>
+  <pre><button class="copy-btn">Copy</button><code>purevox -i in.mp4 -o out.mp4</code></pre>
+  <p>Extension on <code>-o</code> is optional — defaults to <code>.mp4</code> (or the input's audio extension if the input is audio-only).</p>
+
+  <h3>Batch — explicit file pairs</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -i in1.mp4 in2.mp4 in3.mp4 -o out1.mp4 out2.mp4 out3.mp4</code></pre>
+
+  <h3>Batch — folder of outputs</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -i in1.mp4 in2.mp4 -o clean_folder/</code></pre>
+  <p>Outputs auto-named from each input's basename, saved into the folder.</p>
+
+  <h3>Whole folder in, whole folder out</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox --dir episodes/ -o clean/</code></pre>
+  <p>Processes every video file (mp4/mkv/mov/avi/webm) inside the folder.</p>
+
+  <h3>Search current folder</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -s attackS1 -o clean/</code></pre>
+  <p>Interactive checklist of matching files in the current folder — all selected by default, Space toggles, Enter runs, q cancels.</p>
+
+  <h3>Episode-number shorthand</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -e attackS1E 1,2,4 -o clean/
+purevox -e attackS1E 1,2,4 -eo cleanS1E 1,2,4</code></pre>
+  <p><code>-e</code> builds input names, <code>-eo</code> builds output names — independent, use either or both. Ranges like <code>1-4</code> work too.</p>
+
+  <h3>Resuming interrupted jobs</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -r
+purevox -r 0
+purevox -r 0 2 5
+purevox -r -i in1.mp4 in2.mp4 -o out1.mp4 out2.mp4
+purevox -r --dir episodes/ -o clean/</code></pre>
+  <p>No id given: resumes the only pending job, or shows a checklist if there are several. Chunked jobs resume per-chunk — only unfinished chunks get reprocessed.</p>
+
+  <h3>Listing / deleting jobs</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox --jobs
+purevox --delete
+purevox --delete 0 2
+purevox --delete all</code></pre>
+
+  <h3>Dry run & partial batches</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox --dry-run -i in1.mp4 in2.mp4 -o out1.mp4 out2.mp4
+purevox -q 3 -i in1.mp4 in2.mp4 in3.mp4 in4.mp4 -o clean/</code></pre>
+  <p><code>--dry-run</code> shows the plan and touches nothing. <code>-q N</code> registers every job but only runs the first N now; the rest stay pending for <code>purevox -r</code>.</p>
+
+  <h3>Audio-only output</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -i in.mp4 -o clean.mp3</code></pre>
+  <p>If <code>-o</code> ends in an audio extension (mp3/wav/m4a/flac/aac/ogg/wma), PureVox skips the video remux and saves the isolated vocal track directly — even when the input is a video.</p>
+
+  <h3>Forcing chunk size</h3>
+  <pre><button class="copy-btn">Copy</button><code>purevox -c 12 -i in.mp4 -o out.mp4</code></pre>
+  <p>Overrides the automatic chunk length (minutes). Warns and asks for confirmation first if the value looks unsafe for your detected RAM/VRAM.</p>
+
+  <h2>All flags</h2>
+  <table class="flag-table">
+    <tr><th>Short</th><th>Long</th><th>Description</th></tr>
+    <tr><td>-h</td><td>--help</td><td>Show usage and exit</td></tr>
+    <tr><td>-j</td><td>--jobs</td><td>List every pending/interrupted job — id, input, output, progress, model</td></tr>
+    <tr><td>-r</td><td>--resume</td><td>Resume pending/interrupted job(s), optionally by id(s)</td></tr>
+    <tr><td>-i</td><td>--input</td><td>Input file(s)</td></tr>
+    <tr><td>-o</td><td>--output</td><td>Output file(s) or folder</td></tr>
+    <tr><td>-d</td><td>--dir</td><td>Whole-folder input mode</td></tr>
+    <tr><td>-s</td><td>--search</td><td>Search current folder for matching filenames (interactive pick)</td></tr>
+    <tr><td>-e</td><td>--episodes</td><td>Build INPUT names from a prefix + episode numbers/ranges</td></tr>
+    <tr><td>-eo</td><td>--episodes-out</td><td>Build OUTPUT names from a prefix + episode numbers/ranges</td></tr>
+    <tr><td>-n</td><td>--dry-run</td><td>Show the plan, touch nothing</td></tr>
+    <tr><td>-q</td><td>--run-limit</td><td>Register all jobs, only actually run N of them now</td></tr>
+    <tr><td>-x</td><td>--delete</td><td>Delete pending job(s), by id or interactively, or <code>all</code></td></tr>
+    <tr><td>-c</td><td>--chunk</td><td>Force a chunk size in minutes instead of automatic</td></tr>
+  </table>
+
+  <h2>How the model/chunk size is picked</h2>
+  <p>On every run purevox detects RAM (<code>free -g</code>) and GPU VRAM (<code>nvidia-smi</code>, 0 if no NVIDIA GPU) and picks a model + chunk length automatically:</p>
+  <table class="flag-table">
+    <tr><th>Hardware</th><th>Model</th><th>Chunking</th></tr>
+    <tr><td>GPU VRAM ≥ 4GB</td><td>htdemucs</td><td>full file (60min chunks if forced)</td></tr>
+    <tr><td>GPU VRAM ≥ 2GB</td><td>htdemucs</td><td>~20min chunks</td></tr>
+    <tr><td>RAM ≥ 16GB, no usable GPU</td><td>htdemucs</td><td>~30min chunks</td></tr>
+    <tr><td>RAM ≥ 8GB</td><td>htdemucs</td><td>~15min chunks</td></tr>
+    <tr><td>RAM ≥ 6GB</td><td>hdemucs_mmi</td><td>~8min chunks (chunked)</td></tr>
+    <tr><td>RAM ≥ 4GB</td><td>hdemucs_mmi</td><td>~5min chunks (chunked)</td></tr>
+    <tr><td>RAM &lt; 4GB</td><td>hdemucs_mmi</td><td>~3min chunks (chunked)</td></tr>
+  </table>
+  <div class="note-box">Heuristic, not exact science — override with <code>-c</code>/<code>--chunk</code> if it picks wrong for your machine. Chunking exists to keep memory use safe on low-spec hardware, not to speed things up.</div>
+
+  <h2>Job state & resume</h2>
+  <p>Every job's progress lives in <code>~/.purevox/jobs/&lt;hash&gt;/</code> — a <code>state.json</code> plus a <code>stems/</code> folder of completed audio/chunks. Survives OS temp-file cleanup, so <code>-r</code> keeps working even after a reboot. On success the job folder is deleted automatically.</p>
+
+  <a class="back-link" href="index.html">← Back to PureVox</a>
+</main>
+
+<script>
+document.querySelectorAll('.platform-tabs').forEach(group => {
+  const buttons = group.querySelectorAll('.tab-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      let sibling = group.nextElementSibling;
+      while (sibling && sibling.classList.contains('tab-panel')) {
+        sibling.classList.toggle('active', sibling.id === btn.dataset.tab);
+        sibling = sibling.nextElementSibling;
+      }
+    });
+  });
+});
+
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const code = btn.nextElementSibling.innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const old = btn.textContent;
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+    });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -338,12 +338,114 @@ section { padding: 120px 32px; }
   font-size: 12px;
   color: var(--text-mute);
 }
+.download-card.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.os-soon {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--voice-dim);
+}
 .download-note {
   margin-top: 28px;
   font-size: 14px;
   color: var(--text-mute);
 }
 .download-note a { color: var(--voice); }
+
+/* DOCS PAGE */
+.docs-page { padding-top: 120px; max-width: 820px; margin: 0 auto; padding-left: 32px; padding-right: 32px; padding-bottom: 100px; }
+.docs-page h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 42px);
+  margin-bottom: 8px;
+}
+.docs-page .docs-sub { color: var(--text-mute); margin-bottom: 56px; font-size: 15.5px; }
+.docs-page h2 {
+  font-size: 21px;
+  margin-top: 56px;
+  margin-bottom: 16px;
+  color: var(--voice);
+  font-family: var(--font-display);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.docs-page h3 { font-size: 16px; margin-top: 28px; margin-bottom: 10px; }
+.docs-page p { color: var(--text-mute); line-height: 1.7; font-size: 15px; margin-bottom: 14px; }
+.docs-page ul, .docs-page ol { color: var(--text-mute); line-height: 1.8; font-size: 15px; padding-left: 22px; margin-bottom: 14px; }
+.docs-page code {
+  font-family: var(--font-display);
+  background: var(--surface-2);
+  color: var(--voice);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13.5px;
+}
+.docs-page pre {
+  position: relative;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+}
+.docs-page pre code { background: none; padding: 0; color: var(--text-hi); }
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-mute);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.copy-btn:hover { color: var(--voice); border-color: var(--voice-dim); }
+.copy-btn.copied { color: var(--voice); border-color: var(--voice-dim); }
+.platform-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  color: var(--text-mute);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+.tab-btn.active { color: var(--voice); border-color: var(--voice-dim); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.flag-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
+.flag-table th, .flag-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.flag-table th { color: var(--voice); font-family: var(--font-display); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+.flag-table td:first-child { font-family: var(--font-display); color: var(--text-hi); white-space: nowrap; }
+.flag-table td { color: var(--text-mute); }
+.note-box {
+  border-left: 3px solid var(--voice-dim);
+  background: var(--surface-2);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-mute);
+}
+.back-link { display: inline-block; margin-top: 40px; color: var(--voice); font-family: var(--font-display); font-size: 13px; }
 
 /* FOOTER */
 .footer {
