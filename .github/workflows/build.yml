@@ -56,7 +56,7 @@ jobs:
         run: cargo install tauri-cli --version "^2.0.0" --locked
 
       - name: Build
-        working-directory: ./src-tauri
+        working-directory: ./desktop/src-tauri
         run: cargo tauri build ${{ matrix.target != '' && format('--target {0}', matrix.target) || '' }}
 
       - name: Upload artifacts
@@ -64,7 +64,7 @@ jobs:
         with:
           name: purevox-${{ matrix.platform }}-${{ matrix.target || 'default' }}
           path: |
-            src-tauri/target/**/release/bundle/**
+            desktop/src-tauri/target/**/release/bundle/**
           if-no-files-found: error
 
   release:
