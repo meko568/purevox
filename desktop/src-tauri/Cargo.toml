@@ -1,5 +1,5 @@
 [package]
-name = "purevox"
+name = "purevox-desktop"
 version = "0.1.0"
 description = "PureVox desktop app"
 edition = "2021"

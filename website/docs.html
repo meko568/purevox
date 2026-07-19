@@ -82,7 +82,16 @@ sudo mv purevox /usr/local/bin/</code></pre>
   </div>
 
   <div class="tab-panel active" id="app-linux">
-    <p>Grab the .AppImage / .deb / .rpm from the Download section once a release is published, or build from source:</p>
+    <p>Download directly, no clone needed:</p>
+    <ul>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_amd64.AppImage" target="_blank" rel="noopener">PureVox_0.1.0_amd64.AppImage</a> — works on most distros</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_amd64.deb" target="_blank" rel="noopener">PureVox_0.1.0_amd64.deb</a> — Debian/Ubuntu</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox-0.1.0-1.x86_64.rpm" target="_blank" rel="noopener">PureVox-0.1.0-1.x86_64.rpm</a> — Fedora/RHEL</li>
+    </ul>
+    <p>AppImage: make it executable, then run it.</p>
+    <pre><button class="copy-btn">Copy</button><code>chmod +x PureVox_0.1.0_amd64.AppImage
+./PureVox_0.1.0_amd64.AppImage</code></pre>
+    <p>Or build from source instead:</p>
     <pre><button class="copy-btn">Copy</button><code>sudo apt install libwebkit2gtk-4.1-dev libglib2.0-dev libgtk-3-dev \
   libayatana-appindicator3-dev librsvg2-dev patchelf build-essential \
   curl wget file libssl-dev
@@ -97,7 +106,13 @@ cargo tauri build</code></pre>
   </div>
 
   <div class="tab-panel" id="app-macos">
-    <p>Grab the .dmg from the Download section once a release is published, or build from source:</p>
+    <p>Download directly, no clone needed:</p>
+    <ul>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_aarch64.dmg" target="_blank" rel="noopener">PureVox_0.1.0_aarch64.dmg</a> — Apple Silicon (M1/M2/M3/M4)</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64.dmg" target="_blank" rel="noopener">PureVox_0.1.0_x64.dmg</a> — Intel Macs</li>
+    </ul>
+    <div class="note-box">Unsigned build — Gatekeeper will block it on first open. Right-click the app → Open → Open, once, to allow it.</div>
+    <p>Or build from source instead:</p>
     <pre><button class="copy-btn">Copy</button><code>xcode-select --install
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -109,11 +124,15 @@ cargo tauri build</code></pre>
     <p>For a universal build (Intel + Apple Silicon):</p>
     <pre><button class="copy-btn">Copy</button><code>rustup target add aarch64-apple-darwin x86_64-apple-darwin
 cargo tauri build --target universal-apple-darwin</code></pre>
-    <p>The built .dmg/.app lands in <code>desktop/src-tauri/target/release/bundle/</code>.</p>
   </div>
 
   <div class="tab-panel" id="app-windows">
-    <div class="note-box">Windows desktop build isn't published yet — build currently fails locally and is being fixed. Use the CLI via WSL in the meantime.</div>
+    <p>Download directly, no clone needed:</p>
+    <ul>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64-setup.exe" target="_blank" rel="noopener">PureVox_0.1.0_x64-setup.exe</a> — NSIS installer</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64_en-US.msi" target="_blank" rel="noopener">PureVox_0.1.0_x64_en-US.msi</a> — MSI installer</li>
+    </ul>
+    <div class="note-box">Unsigned build — SmartScreen may warn on first run. Click "More info" → "Run anyway".</div>
   </div>
 
   <h2>Basic CLI usage</h2>
