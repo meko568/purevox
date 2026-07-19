@@ -16,7 +16,7 @@ name: build
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
 
 jobs:
@@ -27,14 +27,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest'
-            target: 'aarch64-apple-darwin' # Apple Silicon (M1 and later)
-          - platform: 'macos-latest'
-            target: 'x86_64-apple-darwin'  # Intel Macs
-          - platform: 'ubuntu-22.04'
-            target: ''
-          - platform: 'windows-latest'
-            target: ''
+          - platform: "macos-latest"
+            target: "aarch64-apple-darwin" # Apple Silicon (M1 and later)
+          - platform: "macos-latest"
+            target: "x86_64-apple-darwin" # Intel Macs
+          - platform: "ubuntu-22.04"
+            target: ""
+          - platform: "windows-latest"
+            target: ""
 
     runs-on: ${{ matrix.platform }}
 
