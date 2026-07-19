@@ -100,25 +100,75 @@
     <span class="eyebrow">Get PureVox</span>
     <h2>Pick your platform</h2>
   </div>
-  <div class="download-grid">
-    <a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_amd64.AppImage" class="download-card" target="_blank" rel="noopener">
-      <span class="os-name">Linux</span>
-      <span class="os-file">.AppImage</span>
-    </a>
-    <a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_aarch64.dmg" class="download-card" target="_blank" rel="noopener">
-      <span class="os-name">macOS</span>
-      <span class="os-file">.dmg (Apple Silicon)</span>
-    </a>
-    <a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64-setup.exe" class="download-card" target="_blank" rel="noopener">
-      <span class="os-name">Windows</span>
-      <span class="os-file">.exe</span>
-    </a>
-    <a href="https://raw.githubusercontent.com/meko568/purevox/main/cli/purevox" class="download-card" target="_blank" rel="noopener">
-      <span class="os-name">CLI</span>
-      <span class="os-file">purevox</span>
-    </a>
+
+  <div class="smart-download" id="smart-download">
+    <div>
+      <div class="sd-label" id="sd-label">Detecting your system…</div>
+      <div class="sd-file" id="sd-file">—</div>
+      <div class="sd-sub" id="sd-sub"></div>
+    </div>
+    <a href="#" id="sd-btn" class="sd-btn">Download</a>
   </div>
-  <p class="download-note">Intel Mac? <a href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64.dmg">Download the x64 .dmg</a> instead. Prefer the command line? <a href="docs.html">Read the CLI docs →</a></p>
+
+  <div class="all-downloads">
+    <div class="os-group">
+      <h3>Linux</h3>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox_0.1.0_amd64.AppImage</div><div class="fr-note">Works on most distros, no install needed</div></div>
+        <div class="fr-size">77.7 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_amd64.AppImage" target="_blank" rel="noopener">Download</a>
+      </div>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox_0.1.0_amd64.deb</div><div class="fr-note">Debian / Ubuntu</div></div>
+        <div class="fr-size">3.9 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_amd64.deb" target="_blank" rel="noopener">Download</a>
+      </div>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox-0.1.0-1.x86_64.rpm</div><div class="fr-note">Fedora / RHEL / openSUSE</div></div>
+        <div class="fr-size">3.9 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox-0.1.0-1.x86_64.rpm" target="_blank" rel="noopener">Download</a>
+      </div>
+    </div>
+
+    <div class="os-group">
+      <h3>macOS</h3>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox_0.1.0_aarch64.dmg</div><div class="fr-note">Apple Silicon — M1/M2/M3/M4</div></div>
+        <div class="fr-size">6.51 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_aarch64.dmg" target="_blank" rel="noopener">Download</a>
+      </div>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox_0.1.0_x64.dmg</div><div class="fr-note">Intel Macs</div></div>
+        <div class="fr-size">6.62 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64.dmg" target="_blank" rel="noopener">Download</a>
+      </div>
+    </div>
+
+    <div class="os-group">
+      <h3>Windows</h3>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox_0.1.0_x64-setup.exe</div><div class="fr-note">NSIS installer — recommended</div></div>
+        <div class="fr-size">2.49 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64-setup.exe" target="_blank" rel="noopener">Download</a>
+      </div>
+      <div class="file-row">
+        <div><div class="fr-name">PureVox_0.1.0_x64_en-US.msi</div><div class="fr-note">MSI installer</div></div>
+        <div class="fr-size">3.76 MB</div>
+        <a class="fr-get" href="https://github.com/meko568/purevox/releases/download/v0.1.0/PureVox_0.1.0_x64_en-US.msi" target="_blank" rel="noopener">Download</a>
+      </div>
+    </div>
+
+    <div class="os-group">
+      <h3>Command line</h3>
+      <div class="file-row">
+        <div><div class="fr-name">purevox</div><div class="fr-note">CLI script — Linux &amp; macOS, Windows via WSL</div></div>
+        <div class="fr-size">script</div>
+        <a class="fr-get" href="https://raw.githubusercontent.com/meko568/purevox/main/cli/purevox" target="_blank" rel="noopener">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <p class="download-note">Not sure how to install once it's downloaded? <a href="docs.html">Read the setup docs →</a></p>
 </section>
 
 <footer class="footer">

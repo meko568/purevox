@@ -186,3 +186,75 @@ window.addEventListener(
   },
   { once: true }
 );
+
+// ---------- Smart download: detect OS (and Mac chip) to recommend a file ----------
+(function () {
+  const REL = 'https://github.com/meko568/purevox/releases/download/v0.1.0/';
+
+  function detectAppleSilicon() {
+    // Apple Silicon Macs expose an "Apple M#" / "Apple GPU" WebGL renderer string;
+    // Intel Macs report an Intel/AMD/Nvidia string instead. Best-effort, not 100%,
+    // but the full list below covers anyone this guesses wrong for.
+    try {
+      const gl = document.createElement('canvas').getContext('webgl');
+      const dbg = gl && gl.getExtension('WEBGL_debug_renderer_info');
+      const renderer = dbg && gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
+      if (renderer && /Apple (M\d|GPU)/i.test(renderer)) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function detect() {
+    const ua = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+
+    if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) {
+      const isAppleSilicon = detectAppleSilicon();
+      return {
+        label: 'Recommended for macOS' + (isAppleSilicon ? ' (Apple Silicon)' : ' (Intel)'),
+        file: isAppleSilicon ? 'PureVox_0.1.0_aarch64.dmg' : 'PureVox_0.1.0_x64.dmg',
+        sub: isAppleSilicon ? 'For M1/M2/M3/M4 Macs' : 'For Intel Macs',
+      };
+    }
+    if (/Win/i.test(platform) || /Windows/i.test(ua)) {
+      return {
+        label: 'Recommended for Windows',
+        file: 'PureVox_0.1.0_x64-setup.exe',
+        sub: '64-bit installer',
+      };
+    }
+    if (/Linux/i.test(platform) || /Linux/i.test(ua)) {
+      return {
+        label: 'Recommended for Linux',
+        file: 'PureVox_0.1.0_amd64.AppImage',
+        sub: 'Runs on most distros, no install needed',
+      };
+    }
+    return null;
+  }
+
+  function applySmartDownload() {
+    const box = document.getElementById('smart-download');
+    if (!box) return;
+    const labelEl = document.getElementById('sd-label');
+    const fileEl = document.getElementById('sd-file');
+    const subEl = document.getElementById('sd-sub');
+    const btnEl = document.getElementById('sd-btn');
+
+    const result = detect();
+    if (!result) {
+      box.style.display = 'none';
+      return;
+    }
+    labelEl.textContent = result.label;
+    fileEl.textContent = result.file;
+    subEl.textContent = result.sub;
+    btnEl.href = REL + result.file;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applySmartDownload);
+  } else {
+    applySmartDownload();
+  }
+})();

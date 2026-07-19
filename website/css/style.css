@@ -357,6 +357,95 @@ section { padding: 120px 32px; }
 }
 .download-note a { color: var(--voice); }
 
+/* SMART DOWNLOAD */
+.smart-download {
+  border: 1px solid var(--voice-dim);
+  background: var(--surface-2);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.smart-download .sd-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin-bottom: 6px;
+}
+.smart-download .sd-file {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-hi);
+}
+.smart-download .sd-sub {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin-top: 4px;
+}
+.sd-btn {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--voice);
+  padding: 14px 28px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.sd-btn:hover { filter: brightness(1.08); }
+
+/* ALL DOWNLOADS TABLE */
+.all-downloads { margin-top: 8px; }
+.os-group { margin-bottom: 28px; }
+.os-group h3 {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--voice);
+  margin-bottom: 10px;
+}
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--surface-2);
+}
+.file-row:hover { border-color: var(--voice-dim); }
+.file-row .fr-name {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  color: var(--text-hi);
+}
+.file-row .fr-note {
+  font-size: 12px;
+  color: var(--text-mute);
+  margin-top: 2px;
+}
+.file-row .fr-size {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--text-mute);
+  white-space: nowrap;
+}
+.file-row a.fr-get {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--voice);
+  white-space: nowrap;
+}
+
 /* DOCS PAGE */
 .docs-page { padding-top: 120px; max-width: 820px; margin: 0 auto; padding-left: 32px; padding-right: 32px; padding-bottom: 100px; }
 .docs-page h1 {
