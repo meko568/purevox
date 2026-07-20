@@ -189,7 +189,7 @@ window.addEventListener(
 
 // ---------- Smart download: detect OS (and Mac chip) to recommend a file ----------
 (function () {
-  const REL = 'https://github.com/meko568/purevox/releases/download/v0.1.0/';
+  const REL = 'https://github.com/meko568/purevox/releases/download/v0.1.1/';
 
   function detectAppleSilicon() {
     // Apple Silicon Macs expose an "Apple M#" / "Apple GPU" WebGL renderer string;
@@ -212,21 +212,21 @@ window.addEventListener(
       const isAppleSilicon = detectAppleSilicon();
       return {
         label: 'Recommended for macOS' + (isAppleSilicon ? ' (Apple Silicon)' : ' (Intel)'),
-        file: isAppleSilicon ? 'PureVox_0.1.0_aarch64.dmg' : 'PureVox_0.1.0_x64.dmg',
+        file: isAppleSilicon ? 'PureVox_0.1.1_aarch64.dmg' : 'PureVox_0.1.1_x64.dmg',
         sub: isAppleSilicon ? 'For M1/M2/M3/M4 Macs' : 'For Intel Macs',
       };
     }
     if (/Win/i.test(platform) || /Windows/i.test(ua)) {
       return {
         label: 'Recommended for Windows',
-        file: 'PureVox_0.1.0_x64-setup.exe',
+        file: 'PureVox_0.1.1_x64-setup.exe',
         sub: '64-bit installer',
       };
     }
     if (/Linux/i.test(platform) || /Linux/i.test(ua)) {
       return {
         label: 'Recommended for Linux',
-        file: 'PureVox_0.1.0_amd64.AppImage',
+        file: 'PureVox_0.1.1_amd64.AppImage',
         sub: 'Runs on most distros, no install needed',
       };
     }
@@ -257,4 +257,86 @@ window.addEventListener(
   } else {
     applySmartDownload();
   }
+})();
+
+// ---------- Low-RAM warning: nudge toward CLI on weak devices ----------
+(function () {
+  function checkRam() {
+    // navigator.deviceMemory is Chrome/Edge/Android only (rounded, capped at 8).
+    // Unsupported browsers (Safari/Firefox) just won't see this warning.
+    const ram = navigator.deviceMemory;
+    if (typeof ram !== 'number') return;
+    if (ram < 8) {
+      const box = document.getElementById('ram-warning');
+      if (box) box.style.display = 'flex';
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkRam);
+  } else {
+    checkRam();
+  }
+})();
+
+// ---------- Mobile detection: swap desktop download grid for Colab notebook ----------
+(function () {
+  function isMobile() {
+    const ua = navigator.userAgent || '';
+    if (/Android|iPhone|iPad|iPod|Mobi/i.test(ua)) return true;
+    // iPadOS 13+ reports as Mac but has touch support
+    if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) return true;
+    return false;
+  }
+
+  function applyMobileView() {
+    if (!isMobile()) return;
+    const smart = document.getElementById('smart-download');
+    const all = document.getElementById('all-downloads');
+    const colab = document.getElementById('mobile-colab');
+    const ramWarn = document.getElementById('ram-warning');
+    if (smart) smart.style.display = 'none';
+    if (all) all.style.display = 'none';
+    if (ramWarn) ramWarn.style.display = 'none'; // desktop RAM advice is irrelevant on mobile
+    if (colab) colab.style.display = 'block';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyMobileView);
+  } else {
+    applyMobileView();
+  }
+})();
+
+// ---------- CLI script: force download instead of opening raw text in the tab ----------
+// raw.githubusercontent.com serves the file as text/plain, so a plain <a> just
+// displays it. Fetch it ourselves and save it as a Blob instead.
+(function () {
+  const btn = document.getElementById('cli-download-btn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async function (e) {
+    e.preventDefault();
+    const url = btn.getAttribute('href');
+    const originalText = btn.textContent;
+    btn.textContent = 'Downloading…';
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      const blob = new Blob([text], { type: 'application/octet-stream' });
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'purevox';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      // Network hiccup or CORS block — fall back to opening it directly
+      window.open(url, '_blank', 'noopener');
+    } finally {
+      btn.textContent = originalText;
+    }
+  });
 })();
