@@ -988,9 +988,10 @@ process_one() {
     is_audio_ext "$OUTPUT" && IS_AUDIO_JOB=true
     [ "$IS_AUDIO_JOB" = true ] && echo "    Audio-only job (output is .${OUTPUT##*.}) — no video remux at the end."
 
-    local MODEL USE_CHUNKS
+    local MODEL USE_CHUNKS SHORT_ID
     MODEL="$(grep -oP '"model":\s*"\K[^"]+' "$STATE_FILE" || true)"
     USE_CHUNKS="$(grep -oP '"use_chunks":\s*\K(true|false)' "$STATE_FILE" || true)"
+    SHORT_ID="$(grep -oP '"short_id":\s*\K[0-9]+' "$STATE_FILE" || true)"
     if [ -z "$MODEL" ] || [ -z "$USE_CHUNKS" ]; then
         echo "!! Couldn't read job state from $STATE_FILE (corrupt or unexpected format)."
         echo "!! Delete that job dir and re-run: rm -rf \"$JOB_DIR\""
@@ -1004,6 +1005,7 @@ process_one() {
     write_state() {
         cat > "$STATE_FILE.tmp" <<EOF
 {
+  "short_id": ${SHORT_ID:-0},
   "input": "$ABS_INPUT",
   "output": "$OUTPUT",
   "model": "$MODEL",
