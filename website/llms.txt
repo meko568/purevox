@@ -1,0 +1,14 @@
+# PureVox
+## Purpose
+PureVox is a free, open-source tool that removes background music from videos locally without requiring cloud uploads.
+
+## Key Pages
+- `index.html`: Main landing page
+- `docs.html`: Documentation and setup instructions
+
+## Content Structure
+- **Hero section**: Product overview with clear value proposition
+- **How it works**: Step-by-step explanation of the audio separation process
+- **Features**: Technical benefits and advantages
+- **Download section**: Platform-specific installation options
+- **Mobile alternative**: Google Colab integration for non-desktop users

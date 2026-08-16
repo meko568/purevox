@@ -1,0 +1,14 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is PureVox?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PureVox is a free, open-source tool that removes background music from videos locally using AI without requiring cloud uploads."
+      }
+    }
+  ]
+}
