@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /schema.json
+Allow: /llms.txt
+Disallow: /private/
+Disallow: /temp/
+
+Sitemap: https://purevox.com/sitemap.xml
