@@ -5,4 +5,4 @@ Allow: /llms.txt
 Disallow: /private/
 Disallow: /temp/
 
-Sitemap: https://purevox.com/sitemap.xml
+Sitemap: https://meko568.github.io/purevox/sitemap.xml
