@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How to Remove Background Music from a Video (Free &amp; Local) — PureVox</title>
+<meta name="description" content="Step-by-step guide to removing background music from any video for free — using PureVox on Windows, macOS or Linux, the lightweight CLI, or Google Colab on your phone. 100% local, no uploads." />
+<link rel="canonical" href="https://meko568.github.io/purevox/guides/remove-background-music.html" />
+<meta property="og:site_name" content="PureVox" />
+<meta property="og:title" content="How to Remove Background Music from a Video (Free &amp; Local)" />
+<meta property="og:description" content="Three free ways to strip background music out of a video and keep the dialogue — desktop, CLI, or Colab." />
+<meta property="og:url" content="https://meko568.github.io/purevox/guides/remove-background-music.html" />
+<meta property="og:image" content="https://meko568.github.io/purevox/assets/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="How to Remove Background Music from a Video (Free &amp; Local)" />
+<meta name="twitter:description" content="Three free ways to strip background music out of a video and keep the dialogue — desktop, CLI, or Colab." />
+<meta name="twitter:image" content="https://meko568.github.io/purevox/assets/og-image.png" />
+<link rel="icon" href="../favicon.ico" sizes="48x48" />
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png" />
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="../index.html"><span class="logo-mark">PV</span></a>
+    <nav class="nav-links">
+      <a href="../index.html#how">How it works</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../docs.html">Docs</a>
+      <a href="../index.html#download" class="nav-cta">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="docs-page">
+  <h1>How to remove background music from a video</h1>
+  <p class="docs-sub">Three free ways to strip music out of a clip and keep the dialogue — no uploads, no watermarks, no subscriptions.</p>
+
+  <p>Background music ruins clips where the talking matters: lecture recordings, interviews, gameplay commentary, anime episodes with a loud OST buried under the voices. Most "audio remover" sites upload your file to a server, charge a subscription, or stamp a watermark on the result. Here's how to do it properly — for free, with everything running on your own machine.</p>
+
+  <h2>Option 1 — PureVox Desktop (easiest)</h2>
+  <ol>
+    <li><a href="../index.html#download">Download PureVox</a> for Windows, macOS (Intel or Apple Silicon) or Linux.</li>
+    <li>Open the app and drop your video in — MP4, MOV, MKV or any format your system can play.</li>
+    <li>Start the job. An AI model called Demucs splits the audio into three stems: voice, music and effects.</li>
+    <li>When it finishes, you get your video back with the music gone and the dialogue untouched.</li>
+  </ol>
+  <p>Everything happens locally — your footage never leaves your disk. Long files are processed in chunks, and if your laptop dies mid-job you can resume where it left off.</p>
+
+  <h2>Option 2 — the CLI (for terminals and old machines)</h2>
+  <p>If you live in a terminal or your machine barely meets the requirements, the <a href="../docs.html">purevox CLI</a> does the same job with a single command and a lighter footprint:</p>
+  <pre><code>purevox input_video.mp4</code></pre>
+  <p>Grab it from the <a href="../index.html#cli-download">command line download section</a> — works on Linux and macOS, and on Windows through WSL.</p>
+
+  <h2>Option 3 — Google Colab (no install, works on phones)</h2>
+  <p>No computer powerful enough? Run PureVox on Google's hardware for free:</p>
+  <ol>
+    <li>Open the <a href="https://colab.research.google.com/github/meko568/purevox/blob/main/colab/purevox_colab.ipynb" target="_blank" rel="noopener">Colab notebook</a> and sign in with a Google account.</li>
+    <li>Run each cell top to bottom (Runtime → Run all).</li>
+    <li>Upload your video when prompted, then wait for the cleaned file to download automatically.</li>
+  </ol>
+
+  <h2>Tips for the cleanest result</h2>
+  <ul>
+    <li><strong>Dialogue louder than music works best.</strong> AI separation is good, but nothing recovers a voice that's buried 20&nbsp;dB under an OST.</li>
+    <li><strong>Expect near-perfect on speech-heavy audio</strong> — podcasts, lectures, commentary. Dense, vocal-heavy music is the hardest case for any separator.</li>
+    <li><strong>Keep the original file.</strong> If the first pass isn't clean enough, re-run it rather than re-processing an already-processed export.</li>
+  </ul>
+
+  <div class="note-box">
+    PureVox removes music and keeps the voice. If you need the opposite — instrumental only — this tool isn't built for that (yet).
+  </div>
+
+  <a class="back-link" href="../index.html">← Back to PureVox</a>
+</main>
+
+<footer class="footer">
+  <span>PureVox — built by a solo dev who got tired of loud anime OSTs.</span>
+  <div class="footer-links">
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    <a href="#">Ko-fi</a>
+    <a href="mailto:purevox.app@gmail.com">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>

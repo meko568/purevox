@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="keywords" content="PureVox, remove background music, video audio separation, open source software, local processing, AI video tool, audio editing software, remove music from video, free video editor, local AI processing">
+<meta name="description" content="PureVox removes background music from any video locally using AI. Free, open source, runs offline on Linux, macOS and Windows — your footage never leaves your machine.">
 <title>PureVox - Remove Background Music from Video Locally | Free Open Source Tool</title>
 <link rel="icon" href="favicon.ico" sizes="48x48" />
 <link rel="icon" type="image/png" sizes="96x96" href="assets/icon-96.png" />
@@ -12,7 +13,18 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 <meta property="og:site_name" content="PureVox" />
 <meta property="og:title" content="PureVox - Remove Background Music from Video Locally | Free Open Source Tool" />
+<meta property="og:description" content="Cuts the background music out of any video. Keeps every word. Free, open source, 100% local." />
+<meta property="og:image" content="https://meko568.github.io/purevox/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="PureVox — remove background music from video, keep every word" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="PureVox — Remove Background Music from Video Locally" />
+<meta name="twitter:description" content="Cuts the background music out of any video. Keeps every word. Free, open source, 100% local." />
+<meta name="twitter:image" content="https://meko568.github.io/purevox/assets/og-image.png" />
 <meta property="og:url" content="https://meko568.github.io/purevox/" />
+<link rel="canonical" href="https://meko568.github.io/purevox/" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -112,6 +124,78 @@
     </div>
   </div>
 </section>
+
+<section class="faq" id="faq">
+  <div class="section-head">
+    <span class="eyebrow">Before you ask</span>
+    <h2>Frequently asked questions</h2>
+  </div>
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary>Is PureVox really free?</summary>
+      <p>Yes. PureVox is free and open source — no subscription, no watermark, no feature paywall. If it saves you time, you can support development with a donation.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Does my video get uploaded anywhere?</summary>
+      <p>No. Separation runs entirely on your own machine with AI models stored locally. Your footage never leaves your disk — there is no server and no account.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Which platforms does PureVox support?</summary>
+      <p>Windows and macOS (Intel and Apple Silicon) installers, plus Linux AppImage, .deb and .rpm packages. No mobile app yet — on phones and tablets you can run PureVox for free in Google Colab instead.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How does it remove background music?</summary>
+      <p>PureVox uses Demucs, an AI model that splits the audio track into stems — voice, music and effects — then rebuilds the video with only the voice stem. Dialogue stays untouched while the music disappears.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Will it run on an old or low-spec computer?</summary>
+      <p>Probably. PureVox picks models and processes files in chunks automatically to keep memory use in check. If your machine is very limited, the CLI tool is lighter, or you can use the Colab notebook which runs on Google's hardware.</p>
+    </details>
+    <details class="faq-item">
+      <summary>What happens if my laptop dies mid-job?</summary>
+      <p>Nothing is lost. Jobs are resumable — reopen PureVox and pick the job back up exactly where it left off.</p>
+    </details>
+  </div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is PureVox really free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. PureVox is free and open source — no subscription, no watermark, no feature paywall. If it saves you time, you can support development with a donation." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my video get uploaded anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Separation runs entirely on your own machine with AI models stored locally. Your footage never leaves your disk — there is no server and no account." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which platforms does PureVox support?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Windows and macOS (Intel and Apple Silicon) installers, plus Linux AppImage, .deb and .rpm packages. No mobile app yet — on phones and tablets you can run PureVox for free in Google Colab instead." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does it remove background music?",
+      "acceptedAnswer": { "@type": "Answer", "text": "PureVox uses Demucs, an AI model that splits the audio track into stems — voice, music and effects — then rebuilds the video with only the voice stem. Dialogue stays untouched while the music disappears." }
+    },
+    {
+      "@type": "Question",
+      "name": "Will it run on an old or low-spec computer?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Probably. PureVox picks models and processes files in chunks automatically to keep memory use in check. If your machine is very limited, the CLI tool is lighter, or you can use the Colab notebook which runs on Google's hardware." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my laptop dies mid-job?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nothing is lost. Jobs are resumable — reopen PureVox and pick the job back up exactly where it left off." }
+    }
+  ]
+}
+</script>
 
 <section class="download" id="download">
   <div class="section-head">
@@ -225,6 +309,7 @@
   <div class="footer-links">
     <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
     <a href="#">Ko-fi</a>
+    <a href="guides/remove-background-music.html">Guide</a>
     <a href="mailto:purevox.app@gmail.com">Contact</a>
   </div>
 </footer>

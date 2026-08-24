@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>PureVox — Docs</title>
+<meta name="description" content="Install and usage guide for the PureVox CLI and desktop app — flags, platform downloads, and Colab setup. Everything runs locally, nothing uploads anywhere." />
 <link rel="icon" href="favicon.ico" sizes="48x48" />
 <link rel="icon" type="image/png" sizes="96x96" href="assets/icon-96.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
@@ -11,6 +12,13 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 <meta property="og:site_name" content="PureVox" />
 <meta property="og:url" content="https://meko568.github.io/purevox/docs.html" />
+<meta property="og:description" content="Install and usage guide for the PureVox CLI and desktop app — everything runs locally, nothing uploads anywhere." />
+<meta property="og:image" content="https://meko568.github.io/purevox/assets/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="PureVox — Docs" />
+<meta name="twitter:description" content="Install and usage guide for the PureVox CLI and desktop app." />
+<meta name="twitter:image" content="https://meko568.github.io/purevox/assets/og-image.png" />
+<link rel="canonical" href="https://meko568.github.io/purevox/docs.html" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -236,6 +244,9 @@ purevox -q 3 -i in1.mp4 in2.mp4 in3.mp4 in4.mp4 -o clean/</code></pre>
 
   <h2>Job state & resume</h2>
   <p>Every job's progress lives in <code>~/.purevox/jobs/&lt;hash&gt;/</code> — a <code>state.json</code> plus a <code>stems/</code> folder of completed audio/chunks. Survives OS temp-file cleanup, so <code>-r</code> keeps working even after a reboot. On success the job folder is deleted automatically.</p>
+
+  <h2>Related guide</h2>
+  <p>New here? Start with <a href="guides/remove-background-music.html">How to remove background music from a video</a> — a walkthrough of the desktop app, CLI, and Colab options.</p>
 
   <a class="back-link" href="index.html">← Back to PureVox</a>
 </main>
