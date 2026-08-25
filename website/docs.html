@@ -108,13 +108,13 @@ sudo mv purevox /usr/local/bin/</code></pre>
   <div class="tab-panel active" id="app-linux">
     <p>Download directly, no clone needed:</p>
     <ul>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox_0.1.1_amd64.AppImage" target="_blank" rel="noopener">PureVox_0.1.1_amd64.AppImage</a> — works on most distros</li>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox_0.1.1_amd64.deb" target="_blank" rel="noopener">PureVox_0.1.1_amd64.deb</a> — Debian/Ubuntu</li>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox-0.1.1-1.x86_64.rpm" target="_blank" rel="noopener">PureVox-0.1.1-1.x86_64.rpm</a> — Fedora/RHEL</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_amd64.AppImage" target="_blank" rel="noopener">PureVox_amd64.AppImage</a> — works on most distros</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_amd64.deb" target="_blank" rel="noopener">PureVox_amd64.deb</a> — Debian/Ubuntu</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_x86_64.rpm" target="_blank" rel="noopener">PureVox_x86_64.rpm</a> — Fedora/RHEL</li>
     </ul>
     <p>AppImage: make it executable, then run it.</p>
-    <pre><button class="copy-btn">Copy</button><code>chmod +x PureVox_0.1.1_amd64.AppImage
-./PureVox_0.1.1_amd64.AppImage</code></pre>
+    <pre><button class="copy-btn">Copy</button><code>chmod +x PureVox_amd64.AppImage
+./PureVox_amd64.AppImage</code></pre>
     <div class="note-box">If you've also installed the CLI, running <code>purevox</code> in a terminal opens the CLI, not the app — the desktop build currently ships a binary with the same name. Launch the desktop app from your applications menu, or open it directly with <code>/usr/bin/purevox</code>. A future release renames the desktop binary to avoid this clash.</div>
     <p>Or build from source instead:</p>
     <pre><button class="copy-btn">Copy</button><code>sudo apt install libwebkit2gtk-4.1-dev libglib2.0-dev libgtk-3-dev \
@@ -133,8 +133,8 @@ cargo tauri build</code></pre>
   <div class="tab-panel" id="app-macos">
     <p>Download directly, no clone needed:</p>
     <ul>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox_0.1.1_aarch64.dmg" target="_blank" rel="noopener">PureVox_0.1.1_aarch64.dmg</a> — Apple Silicon (M1/M2/M3/M4)</li>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox_0.1.1_x64.dmg" target="_blank" rel="noopener">PureVox_0.1.1_x64.dmg</a> — Intel Macs</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_aarch64.dmg" target="_blank" rel="noopener">PureVox_aarch64.dmg</a> — Apple Silicon (M1/M2/M3/M4)</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_x64.dmg" target="_blank" rel="noopener">PureVox_x64.dmg</a> — Intel Macs</li>
     </ul>
     <div class="note-box">Unsigned build — Gatekeeper will block it on first open. Right-click the app → Open → Open, once, to allow it.</div>
     <p>Or build from source instead:</p>
@@ -154,8 +154,8 @@ cargo tauri build --target universal-apple-darwin</code></pre>
   <div class="tab-panel" id="app-windows">
     <p>Download directly, no clone needed:</p>
     <ul>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox_0.1.1_x64-setup.exe" target="_blank" rel="noopener">PureVox_0.1.1_x64-setup.exe</a> — NSIS installer</li>
-      <li><a href="https://github.com/meko568/purevox/releases/download/v0.1.1/PureVox_0.1.1_x64_en-US.msi" target="_blank" rel="noopener">PureVox_0.1.1_x64_en-US.msi</a> — MSI installer</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_x64-setup.exe" target="_blank" rel="noopener">PureVox_x64-setup.exe</a> — NSIS installer</li>
+      <li><a href="https://github.com/meko568/purevox/releases/download/PureVox_x64_en-US.msi" target="_blank" rel="noopener">PureVox_x64_en-US.msi</a> — MSI installer</li>
     </ul>
     <div class="note-box">Unsigned build — SmartScreen may warn on first run. Click "More info" → "Run anyway".</div>
   </div>

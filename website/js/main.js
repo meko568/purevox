@@ -189,7 +189,7 @@ window.addEventListener(
 
 // ---------- Smart download: detect OS (and Mac chip) to recommend a file ----------
 (function () {
-  const REL = 'https://github.com/meko568/purevox/releases/download/v0.1.1/';
+  const REL = 'https://github.com/meko568/purevox/releases/latest/download/';
 
   function detectAppleSilicon() {
     // Apple Silicon Macs expose an "Apple M#" / "Apple GPU" WebGL renderer string;
@@ -212,21 +212,21 @@ window.addEventListener(
       const isAppleSilicon = detectAppleSilicon();
       return {
         label: 'Recommended for macOS' + (isAppleSilicon ? ' (Apple Silicon)' : ' (Intel)'),
-        file: isAppleSilicon ? 'PureVox_0.1.1_aarch64.dmg' : 'PureVox_0.1.1_x64.dmg',
+        file: isAppleSilicon ? 'PureVox_aarch64.dmg' : 'PureVox_x64.dmg',
         sub: isAppleSilicon ? 'For M1/M2/M3/M4 Macs' : 'For Intel Macs',
       };
     }
     if (/Win/i.test(platform) || /Windows/i.test(ua)) {
       return {
         label: 'Recommended for Windows',
-        file: 'PureVox_0.1.1_x64-setup.exe',
+        file: 'PureVox_x64-setup.exe',
         sub: '64-bit installer',
       };
     }
     if (/Linux/i.test(platform) || /Linux/i.test(ua)) {
       return {
         label: 'Recommended for Linux',
-        file: 'PureVox_0.1.1_amd64.AppImage',
+        file: 'PureVox_amd64.AppImage',
         sub: 'Runs on most distros, no install needed',
       };
     }
