@@ -90,11 +90,76 @@ jobs:
             -name '*.msi' -o \
             -name '*.exe' \
           \) -exec cp {} release-files/ \;
-          ls -la release-files
+          cd release-files
+          sha256sum * > SHA256SUMS.txt
+          ls -la
+
+      - name: Write release notes
+        env:
+          VERSION: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          cat > body.md <<'EOF'
+          # PureVox __VERSION__
+
+          Remove background music from any video while keeping every word of dialogue — AI source separation runs **100% locally**. No uploads, no accounts, no watermarks.
+
+          🌐 [Website](https://meko568.github.io/purevox/) · 📖 [Docs](https://meko568.github.io/purevox/docs.html) · 📝 [Guide](https://meko568.github.io/purevox/guides/remove-background-music.html) · ☁️ [Run in Colab](https://colab.research.google.com/github/meko568/purevox/blob/main/colab/purevox_colab.ipynb)
+
+          ---
+
+          ## 📥 Downloads
+
+          | Platform | Download | Notes |
+          |----------|----------|-------|
+          | **Windows** 10/11 (64-bit) | `.exe` | Recommended installer |
+          | **Windows** 10/11 (64-bit) | `.msi` | For admins / silent installs |
+          | **macOS** Apple Silicon | `.dmg` *(aarch64)* | M1 / M2 / M3 / M4 Macs |
+          | **macOS** Intel | `.dmg` *(x64)* | Intel Macs |
+          | **Linux** (any distro) | `.AppImage` | Run directly, nothing to install |
+          | **Linux** Debian / Ubuntu | `.deb` | `sudo apt install ./purevox_*_amd64.deb` |
+          | **Linux** Fedora / RHEL | `.rpm` | `sudo dnf install ./purevox-*.rpm` |
+
+          > 💡 First time? Grab the `.exe` on Windows, the *aarch64* `.dmg` on an Apple Silicon Mac, or the `.AppImage` on Linux.
+          >
+          > ☁️ Can't install anything? [Run PureVox in Google Colab](https://colab.research.google.com/github/meko568/purevox/blob/main/colab/purevox_colab.ipynb) — free, works even from a phone.
+
+          ## ✅ Verify your download
+
+          Every asset ships with a SHA-256 checksum in [SHA256SUMS.txt](https://github.com/__REPO__/releases/download/__VERSION__/SHA256SUMS.txt).
+
+          **Linux**
+          ```bash
+          sha256sum -c SHA256SUMS.txt
+          ```
+
+          **macOS**
+          ```bash
+          shasum -a 256 <downloaded-file>
+          ```
+
+          **Windows (PowerShell)**
+          ```powershell
+          Get-FileHash <downloaded-file> -Algorithm SHA256
+          ```
+
+          Compare the output against the matching line in `SHA256SUMS.txt`.
+
+          ## 🔧 Requirements
+
+          - **OS:** Windows 10+, macOS 12+, or a modern Linux desktop
+          - **RAM:** 8 GB minimum (16 GB recommended)
+          - Models download automatically on first run (~100–300 MB depending on hardware)
+          ---
+          EOF
+          sed -i -e "s/__VERSION__/${VERSION}/g" -e "s|__REPO__|${REPO}|g" body.md
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          name: PureVox ${{ github.ref_name }}
+          body_path: body.md
+          append_body: true
           files: release-files/*
           draft: false
           fail_on_unmatched_files: false
