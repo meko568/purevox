@@ -153,12 +153,116 @@ NOTES:
 EOF
 }
 
+# ============================================================
+# state.json I/O — every read/write goes through python3's json
+# module, so paths containing quotes/backslashes/unicode survive
+# round-trips exactly (the old heredoc + grep -oP approach broke
+# on such characters and on non-GNU systems).
+# ============================================================
+
+# write_job_state <state_file> <short_id> <input> <output> <model>
+#                 <use_chunks:true|false> <total_chunks>
+#                 <chunk_duration> <completed_chunks_csv>
+# All values arrive as argv (never interpolated into the JSON text),
+# serialised with json.dump, written atomically via .tmp + mv.
+write_job_state() {
+    local SF="$1" SID="$2" INP="$3" OUTP="$4" MODEL="$5" UC="$6" TC="$7" CD="$8" CC="${9:-}"
+    python3 - "$SF" "$SID" "$INP" "$OUTP" "$MODEL" "$UC" "$TC" "$CD" "$CC" >"$SF.tmp" <<'PYEOF'
+import json, sys
+
+_, _sf, sid, inp, outp, model, uc, tc, cd, cc = sys.argv[:10]
+
+def as_int(v, default=0):
+    try:
+        return int(str(v).strip())
+    except ValueError:
+        return default
+
+completed = []
+for tok in cc.split(","):
+    tok = tok.strip()
+    if tok:
+        try:
+            completed.append(int(tok))
+        except ValueError:
+            pass
+
+state = {
+    "short_id": as_int(sid),
+    "input": inp,
+    "output": outp,
+    "model": model,
+    "use_chunks": uc == "true",
+    "total_chunks": as_int(tc),
+    "chunk_duration": as_int(cd),
+    "completed_chunks": completed,
+}
+json.dump(state, sys.stdout, indent=2)
+sys.stdout.write("\n")
+PYEOF
+    mv "$SF.tmp" "$SF"
+}
+
+# read_state <state_file> — parse state.json safely and print shell-safe
+# KEY=value lines (values quoted with shlex.quote), intended for:
+#     rs="$(read_state "$sf")" || rs=""
+#     if [ -n "$rs" ]; then eval "$rs"; fi
+# Sets: SHORT_ID INPUT OUTPUT MODEL USE_CHUNKS TOTAL_CHUNKS
+#       CHUNK_DURATION COMPLETED_LIST (comma-separated) COMPLETED_COUNT
+# Missing keys come back as ""; returns 1 if the file is missing,
+# unparsable, or not a JSON object.
+read_state() {
+    if [ -z "${1:-}" ] || [ ! -f "$1" ]; then
+        return 1
+    fi
+    python3 - "$1" <<'PYEOF'
+import json, shlex, sys
+
+try:
+    with open(sys.argv[1], "r", encoding="utf-8", errors="surrogateescape") as f:
+        d = json.load(f)
+except Exception:
+    sys.exit(1)
+if not isinstance(d, dict):
+    sys.exit(1)
+
+def sval(key):
+    v = d.get(key)
+    if v is None:
+        return ""
+    if v is True:
+        return "true"
+    if v is False:
+        return "false"
+    return str(v)
+
+w = sys.stdout.buffer
+for key in ("short_id", "input", "output", "model",
+            "use_chunks", "total_chunks", "chunk_duration"):
+    w.write(("%s=%s\n" % (key.upper(), shlex.quote(sval(key)))).encode("utf-8", "surrogateescape"))
+
+cc = d.get("completed_chunks")
+items = [str(x) for x in cc] if isinstance(cc, list) else []
+w.write(("COMPLETED_LIST=%s\n" % shlex.quote(",".join(items))).encode("utf-8", "surrogateescape"))
+w.write(("COMPLETED_COUNT=%d\n" % len(items)).encode("utf-8", "surrogateescape"))
+PYEOF
+}
+
+# job_hash <absolute_input> — stable job-folder id derived from the
+# file's absolute path + byte size (shasum -a 256: available on macOS,
+# Linux and WSL alike, unlike GNU md5sum).
+job_hash() {
+    local sz
+    sz="$(wc -c < "$1" | tr -d '[:space:]')"
+    printf '%s:%s' "$1" "$sz" | shasum -a 256 | cut -d' ' -f1
+}
+
 get_pending_jobs() {
     # fills JOB_SID[] / JOB_HASH[] / JOB_IN[] / JOB_OUT[], sorted by short id
     JOB_SID=(); JOB_HASH=(); JOB_IN=(); JOB_OUT=()
     local JOBS_ROOT="$HOME/.purevox/jobs"
     [ -d "$JOBS_ROOT" ] || return 0
-    local jd sf sid ji
+    local jd sf sid hash rs mtime age
     local -a rows=()
     for jd in "$JOBS_ROOT"/*/; do
         sf="${jd}state.json"
@@ -169,9 +273,10 @@ get_pending_jobs() {
             # another purevox process (e.g. the GUI listing jobs) runs
             # during that window, don't treat it as stale — only clean up
             # folders old enough that they're clearly abandoned.
-            local age=999999
-            if [ -d "$jd" ]; then
-                age=$(( $(date +%s) - $(stat -c %Y "$jd" 2>/dev/null || echo 0) ))
+            age=0   # unknown mtime => treat as brand-new, never delete on a guess
+            mtime="$(stat -c %Y "$jd" 2>/dev/null)" || mtime="$(stat -f %m "$jd" 2>/dev/null)" || mtime=""
+            if [ -n "$mtime" ]; then
+                age=$(( $(date +%s) - mtime ))
             fi
             if [ "$age" -lt 60 ]; then
                 continue
@@ -180,23 +285,27 @@ get_pending_jobs() {
             rm -rf "$jd"
             continue
         fi
-        sid="$(grep -oP '"short_id":\s*\K[0-9]+' "$sf" || true)"
-        ji="$(grep -oP '"input":\s*"\K[^"]+' "$sf" || true)"
-        if [ -z "$sid" ] || [ -z "$ji" ]; then
-            echo "!! Removing job from an older/incompatible purevox version: $(basename "$jd")" >&2
-            rm -rf "$jd"
+        sid=""; SHORT_ID=""; INPUT=""
+        rs="$(read_state "$sf")" || rs=""
+        if [ -n "$rs" ]; then eval "$rs"; sid="$SHORT_ID"; fi
+        if [ -z "$sid" ] || [ -z "$INPUT" ]; then
+            # Corrupt/incomplete state: NEVER delete the folder — it may
+            # hold hours of cached chunk stems. Warn and skip this job only.
+            echo "!! WARNING: unreadable/incomplete state.json, skipping job (folder kept): $(basename "$jd")" >&2
             continue
         fi
         rows+=("$sid|$(basename "$jd")")
     done
     [ ${#rows[@]} -gt 0 ] || return 0
-    local row hash
     while IFS='|' read -r sid hash; do
         sf="$JOBS_ROOT/$hash/state.json"
+        INPUT=""; OUTPUT=""
+        rs="$(read_state "$sf")" || rs=""
+        if [ -n "$rs" ]; then eval "$rs"; fi
         JOB_SID+=("$sid")
         JOB_HASH+=("$hash")
-        JOB_IN+=("$(grep -oP '"input":\s*"\K[^"]+' "$sf" || true)")
-        JOB_OUT+=("$(grep -oP '"output":\s*"\K[^"]+' "$sf" || true)")
+        JOB_IN+=("$INPUT")
+        JOB_OUT+=("$OUTPUT")
     done < <(printf '%s\n' "${rows[@]}" | sort -t'|' -k1,1n)
     return 0
 }
@@ -240,21 +349,21 @@ list_jobs() {
         echo "No pending jobs."
         return 0
     fi
-    local k jd sf model use_chunks total done
+    local k jd sf rs
     for k in "${!JOB_HASH[@]}"; do
         jd="$HOME/.purevox/jobs/${JOB_HASH[$k]}"
         sf="$jd/state.json"
-        model="$(grep -oP '"model":\s*"\K[^"]+' "$sf" || true)"
-        use_chunks="$(grep -oP '"use_chunks":\s*\K(true|false)' "$sf" || true)"
-        total="$(grep -oP '"total_chunks":\s*\K[0-9]+' "$sf" || true)"
-        done="$(grep -oP '"completed_chunks":\s*\[\K[^\]]*' "$sf" | tr ',' '\n' | sed '/^$/d' | wc -l)"
+        SHORT_ID=""; INPUT=""; OUTPUT=""; MODEL=""; USE_CHUNKS=""
+        TOTAL_CHUNKS=""; CHUNK_DURATION=""; COMPLETED_LIST=""; COMPLETED_COUNT=""
+        rs="$(read_state "$sf")" || rs=""
+        if [ -n "$rs" ]; then eval "$rs"; fi
 
         echo "[${JOB_SID[$k]}] Job: ${JOB_HASH[$k]}"
         echo "  input:   ${JOB_IN[$k]}"
         echo "  output:  ${JOB_OUT[$k]}"
-        echo "  model:   $model"
-        if [ "$use_chunks" == "true" ]; then
-            echo "  progress: $done / $total chunks done"
+        echo "  model:   $MODEL"
+        if [ "$USE_CHUNKS" == "true" ]; then
+            echo "  progress: ${COMPLETED_COUNT:-0} / ${TOTAL_CHUNKS:-0} chunks done"
         else
             [ -f "$jd/stems/vocals.mp3" ] && echo "  progress: vocals separated, pending remux" \
                 || echo "  progress: not yet separated"
@@ -486,11 +595,17 @@ add_default_ext() {
 # interactive_select — checklist picker for -s.
 # Arrow keys move, Space toggles a file, Enter/Tab confirms, q cancels.
 # Fills global array SELECTED_FILES.
+# Takes the source array BY NAME (bash-3 compatible — no namerefs).
 # ============================================================
 interactive_select() {
-    local -n _items="$1"
+    local __src="$1"
+    case "$__src" in
+        ''|*[!A-Za-z0-9_]*) echo "!! interactive_select: bad array name '$__src'" >&2; return 1 ;;
+    esac
+    local -a ITEMS=()
+    eval "ITEMS=(\"\${${__src}[@]}\")"
     local default_state="${2:-1}"   # 1 = everything selected by default, 0 = nothing selected
-    local n=${#_items[@]}
+    local n=${#ITEMS[@]}
     local -a checked=()
     local i
     for ((i = 0; i < n; i++)); do checked[i]=$default_state; done
@@ -509,9 +624,9 @@ interactive_select() {
             local mark=" "
             [ "${checked[i]}" -eq 1 ] && mark="✔"
             if [ "$i" -eq "$cur" ]; then
-                echo "> [$mark] ${_items[i]}"
+                echo "> [$mark] ${ITEMS[i]}"
             else
-                echo "  [$mark] ${_items[i]}"
+                echo "  [$mark] ${ITEMS[i]}"
             fi
         done
         local key rest
@@ -540,7 +655,7 @@ interactive_select() {
     clear 2>/dev/null || true
     SELECTED_FILES=()
     for ((i = 0; i < n; i++)); do
-        [ "${checked[i]}" -eq 1 ] && SELECTED_FILES+=("${_items[i]}")
+        [ "${checked[i]}" -eq 1 ] && SELECTED_FILES+=("${ITEMS[i]}")
     done
     return 0
 }
@@ -653,7 +768,14 @@ fi
 # ============================================================
 expand_episode_names() {
     local prefix="$1" list="$2" check_exists="$3"
-    local -n _out="$4"
+    # bash-3 compatible: copy the caller's array (BY NAME) locally,
+    # append to it here, then copy it back at the end.
+    local __dest="$4"
+    case "$__dest" in
+        ''|*[!A-Za-z0-9_]*) echo "!! expand_episode_names: bad array name '$__dest'" >&2; return 1 ;;
+    esac
+    local -a OUT_ARR=()
+    eval "OUT_ARR=(\"\${${__dest}[@]}\")"
     IFS=',' read -ra NUM_TOKENS <<< "$list"
     local -a nums=()
     for tok in "${NUM_TOKENS[@]}"; do
@@ -674,11 +796,12 @@ expand_episode_names() {
                 echo "!! ${prefix}${n}: no matching file here, skipping."
                 continue
             fi
-            _out+=("$found")
+            OUT_ARR+=("$found")
         else
-            _out+=("$(add_default_ext "${prefix}${n}")")
+            OUT_ARR+=("$(add_default_ext "${prefix}${n}")")
         fi
     done
+    eval "${__dest}=(\"\${OUT_ARR[@]}\")"
 }
 
 if [ -n "$EP_IN_PREFIX" ]; then
@@ -909,7 +1032,7 @@ register_job() {
     local ABS_INPUT
     ABS_INPUT="$(readlink -f "$INPUT")"
     local JOB_ID
-    JOB_ID="$(echo -n "${ABS_INPUT}:$(stat -c%s "$ABS_INPUT")" | md5sum | cut -d' ' -f1)"
+    JOB_ID="$(job_hash "$ABS_INPUT")"
     local JOB_DIR="$HOME/.purevox/jobs/$JOB_ID"
     local STATE_FILE="$JOB_DIR/state.json"
     mkdir -p "$JOB_DIR/stems"
@@ -928,19 +1051,8 @@ register_job() {
         [ "$TOTAL_CHUNKS" -eq 0 ] && TOTAL_CHUNKS=1
     fi
 
-    cat > "$STATE_FILE.tmp" <<EOF
-{
-  "short_id": $NEXT_SID,
-  "input": "$ABS_INPUT",
-  "output": "$OUTPUT",
-  "model": "$SMART_MODEL",
-  "use_chunks": $SMART_USE_CHUNKS,
-  "total_chunks": $TOTAL_CHUNKS,
-  "chunk_duration": $SMART_CHUNK_SEC,
-  "completed_chunks": []
-}
-EOF
-    mv "$STATE_FILE.tmp" "$STATE_FILE"
+    write_job_state "$STATE_FILE" "$NEXT_SID" "$ABS_INPUT" "$OUTPUT" \
+        "$SMART_MODEL" "$SMART_USE_CHUNKS" "$TOTAL_CHUNKS" "$SMART_CHUNK_SEC" ""
     NEXT_SID=$((NEXT_SID + 1))
 }
 
@@ -962,7 +1074,7 @@ process_one() {
     ABS_INPUT="$(readlink -f "$INPUT")"
 
     local JOB_ID
-    JOB_ID="$(echo -n "${ABS_INPUT}:$(stat -c%s "$ABS_INPUT")" | md5sum | cut -d' ' -f1)"
+    JOB_ID="$(job_hash "$ABS_INPUT")"
     local JOB_DIR="$HOME/.purevox/jobs/$JOB_ID"
     local STATE_FILE="$JOB_DIR/state.json"
     local STEMS_DIR="$JOB_DIR/stems"
@@ -988,10 +1100,10 @@ process_one() {
     is_audio_ext "$OUTPUT" && IS_AUDIO_JOB=true
     [ "$IS_AUDIO_JOB" = true ] && echo "    Audio-only job (output is .${OUTPUT##*.}) — no video remux at the end."
 
-    local MODEL USE_CHUNKS SHORT_ID
-    MODEL="$(grep -oP '"model":\s*"\K[^"]+' "$STATE_FILE" || true)"
-    USE_CHUNKS="$(grep -oP '"use_chunks":\s*\K(true|false)' "$STATE_FILE" || true)"
-    SHORT_ID="$(grep -oP '"short_id":\s*\K[0-9]+' "$STATE_FILE" || true)"
+    local MODEL USE_CHUNKS SHORT_ID TOTAL_CHUNKS CHUNK_DURATION COMPLETED_LIST
+    local rs=""
+    rs="$(read_state "$STATE_FILE")" || rs=""
+    if [ -n "$rs" ]; then eval "$rs"; fi
     if [ -z "$MODEL" ] || [ -z "$USE_CHUNKS" ]; then
         echo "!! Couldn't read job state from $STATE_FILE (corrupt or unexpected format)."
         echo "!! Delete that job dir and re-run: rm -rf \"$JOB_DIR\""
@@ -999,26 +1111,16 @@ process_one() {
     fi
     echo "    Using model=$MODEL, chunked=$USE_CHUNKS"
 
-    local TOTAL_CHUNKS=0
     local COMPLETED=()
+    if [ -n "$COMPLETED_LIST" ]; then
+        IFS=',' read -ra COMPLETED <<< "$COMPLETED_LIST"
+    fi
 
     write_state() {
-        cat > "$STATE_FILE.tmp" <<EOF
-{
-  "short_id": ${SHORT_ID:-0},
-  "input": "$ABS_INPUT",
-  "output": "$OUTPUT",
-  "model": "$MODEL",
-  "use_chunks": $USE_CHUNKS,
-  "total_chunks": ${TOTAL_CHUNKS:-0},
-  "chunk_duration": ${CHUNK_DURATION:-0},
-  "completed_chunks": [$(IFS=,; echo "${COMPLETED[*]:-}")]
-}
-EOF
-        mv "$STATE_FILE.tmp" "$STATE_FILE"
+        write_job_state "$STATE_FILE" "${SHORT_ID:-0}" "$ABS_INPUT" "$OUTPUT" \
+            "$MODEL" "$USE_CHUNKS" "${TOTAL_CHUNKS:-0}" "${CHUNK_DURATION:-0}" \
+            "$(IFS=,; echo "${COMPLETED[*]:-}")"
     }
-
-    mapfile -t COMPLETED < <(grep -oP '"completed_chunks":\s*\[\K[^\]]*' "$STATE_FILE" | tr ',' '\n' | sed '/^$/d')
 
     is_done() {
         local n="$1"
@@ -1062,9 +1164,8 @@ EOF
         DURATION=$(ffprobe -i "$AUDIO_FULL" -show_entries format=duration -v quiet -of csv="p=0" | cut -d. -f1)
         echo "    Total duration: ${DURATION}s"
 
-        local CHUNK_DURATION
-        TOTAL_CHUNKS="$(grep -oP '"total_chunks":\s*\K[0-9]+' "$STATE_FILE" || true)"
-        CHUNK_DURATION="$(grep -oP '"chunk_duration":\s*\K[0-9]+' "$STATE_FILE" || true)"
+        # TOTAL_CHUNKS / CHUNK_DURATION were parsed with the rest of the
+        # state above; only completed_chunks mutates during processing.
         [[ "$TOTAL_CHUNKS" =~ ^[0-9]+$ ]] || { echo "!! Couldn't read total_chunks from state file, aborting this job."; return 1; }
         [[ "$CHUNK_DURATION" =~ ^[0-9]+$ ]] || { echo "!! Couldn't read chunk_duration from state file, aborting this job."; return 1; }
         echo "    Chunks: $TOTAL_CHUNKS × ~${CHUNK_DURATION}s each"
