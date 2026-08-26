@@ -157,10 +157,11 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-hi);
   line-height: 1;
 }
+/* Hero elements are visible BY DEFAULT. main.js applies the hidden
+   "from" states itself right before animating, so a blocked/offline
+   GSAP CDN can never leave the hero (or its Download button) blank. */
 .wordmark span {
   display: inline-block;
-  opacity: 0;
-  transform: translateY(24px);
 }
 .wordmark span:nth-child(5),
 .wordmark span:nth-child(6) {
@@ -171,7 +172,6 @@ a { color: inherit; text-decoration: none; }
   margin-top: 20px;
   font-size: clamp(15px, 2vw, 19px);
   color: var(--text-mute);
-  opacity: 0;
 }
 
 .hero-actions {
@@ -179,7 +179,6 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   gap: 14px;
   justify-content: center;
-  opacity: 0;
   pointer-events: auto;
 }
 
@@ -217,7 +216,6 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.15em;
   color: var(--text-mute);
   text-transform: uppercase;
-  opacity: 0;
 }
 .scroll-line {
   width: 1px;

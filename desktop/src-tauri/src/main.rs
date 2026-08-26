@@ -104,6 +104,12 @@ fn build_purevox_command(args: &[String]) -> Command {
     {
         let mut cmd = Command::new("wsl.exe");
         cmd.arg("-e").arg("bash").arg("-lc").arg(wsl_command_string(args));
+        // Anchor the launcher's cwd to the home dir, mirroring the Unix
+        // branch: wsl.exe translates it into the matching /mnt/... path
+        // inside the VM, so a relative output lands where check_exists()
+        // (resolve_against_home) looked — not in whatever unpredictable
+        // directory the app binary was launched from.
+        cmd.current_dir(home_dir());
         cmd
     }
 }

@@ -31,6 +31,20 @@ const stage = document.querySelector('.hero-stage');
 const wordmarkLetters = document.querySelectorAll('#wordmark span');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Hero reveal failsafe. CSS leaves every hero element visible by default;
+// runIntro() hides them via gsap.set right before animating. If GSAP never
+// loads or the intro crashes, these force everything back visible.
+let introStarted = false;
+
+function showHeroInstantly() {
+  document
+    .querySelectorAll('#wordmark span, #tagline, #hero-actions, #scroll-cue')
+    .forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+}
+
 function shatterBar(bar) {
   const barRect = bar.getBoundingClientRect();
   const stageRect = stage.getBoundingClientRect();
@@ -75,101 +89,118 @@ function getComputedScale(el) {
 }
 
 function runIntro() {
-  if (prefersReducedMotion) {
-    // skip straight to the settled state, no motion
-    bars.forEach((bar) => {
-      bar.classList.remove('idle');
-      if (bar.dataset.voice === '1') {
-        gsap.set(bar, { scaleY: 0.6 });
-      } else {
-        gsap.set(bar, { scaleY: 0, opacity: 0 });
-      }
-    });
-    gsap.set(wordmarkLetters, { opacity: 1, y: 0 });
-    gsap.set(['#tagline', '#hero-actions', '#scroll-cue'], { opacity: 1 });
+  if (typeof gsap === 'undefined') {
+    // GSAP didn't load (offline / CDN blocked). The hero is visible by
+    // default in CSS — skip the choreography instead of hiding anything.
     return;
   }
+  introStarted = true;
 
-  const tl = gsap.timeline({ delay: 0.3 });
+  try {
+    // Hidden "from" states live HERE, not in CSS, so no GSAP == visible hero.
+    gsap.set(wordmarkLetters, { opacity: 0, y: 24 });
+    gsap.set(['#tagline', '#hero-actions', '#scroll-cue'], { opacity: 0 });
 
-  // let the chaotic waveform breathe for a moment
-  tl.to({}, { duration: 1.1 });
-
-  // sweep the blade left -> right
-  tl.set(blade, { opacity: 1 });
-  tl.to(blade, {
-    left: '105%',
-    duration: 1.3,
-    ease: 'power2.inOut',
-    onUpdate: function () {
-      const progress = this.progress();
-      const stageWidth = barsEl.getBoundingClientRect().width;
-      const bladeX = -0.05 * stageWidth + progress * (1.10 * stageWidth);
-      const containerLeft = barsEl.getBoundingClientRect().left;
-
+    if (prefersReducedMotion) {
+      // skip straight to the settled state, no motion
       bars.forEach((bar) => {
-        if (bar.dataset.cut === '1') return;
-        const rect = bar.getBoundingClientRect();
-        const barX = rect.left - containerLeft;
-        if (barX <= bladeX) {
-          bar.dataset.cut = '1';
-          bar.classList.remove('idle');
-          if (bar.dataset.voice === '1') {
-            // voice survives: settle to a clean, steady height
-            gsap.to(bar, {
-              scaleY: 0.55 + Math.random() * 0.15,
-              duration: 0.35,
-              ease: 'back.out(2)',
-            });
-          } else {
-            // noise gets smashed apart into falling shards
-            shatterBar(bar);
-          }
+        bar.classList.remove('idle');
+        if (bar.dataset.voice === '1') {
+          gsap.set(bar, { scaleY: 0.6 });
+        } else {
+          gsap.set(bar, { scaleY: 0, opacity: 0 });
         }
       });
-    },
-  });
+      gsap.set(wordmarkLetters, { opacity: 1, y: 0 });
+      gsap.set(['#tagline', '#hero-actions', '#scroll-cue'], { opacity: 1 });
+      return;
+    }
 
-  tl.to(blade, { opacity: 0, duration: 0.25 }, '-=0.1');
+    const tl = gsap.timeline({ delay: 0.3 });
 
-  tl.addLabel('reveal');
+    // let the chaotic waveform breathe for a moment
+    tl.to({}, { duration: 1.1 });
 
-  // wordmark letters rise into place, voice-colored letters (U, V) already styled via CSS
-  tl.to(
-    wordmarkLetters,
-    {
-      opacity: 1,
-      y: 0,
-      duration: 0.55,
-      ease: 'back.out(1.7)',
-      stagger: 0.045,
-    },
-    'reveal'
-  );
+    // sweep the blade left -> right
+    tl.set(blade, { opacity: 1 });
+    tl.to(blade, {
+      left: '105%',
+      duration: 1.3,
+      ease: 'power2.inOut',
+      onUpdate: function () {
+        const progress = this.progress();
+        const stageWidth = barsEl.getBoundingClientRect().width;
+        const bladeX = -0.05 * stageWidth + progress * (1.10 * stageWidth);
+        const containerLeft = barsEl.getBoundingClientRect().left;
 
-  tl.to('#tagline', { opacity: 1, duration: 0.6, ease: 'power1.out' }, 'reveal+=0.2');
-  tl.to('#hero-actions', { opacity: 1, duration: 0.6, ease: 'power1.out' }, 'reveal+=0.35');
-  tl.to('#scroll-cue', { opacity: 1, duration: 0.6 }, 'reveal+=0.35');
+        bars.forEach((bar) => {
+          if (bar.dataset.cut === '1') return;
+          const rect = bar.getBoundingClientRect();
+          const barX = rect.left - containerLeft;
+          if (barX <= bladeX) {
+            bar.dataset.cut = '1';
+            bar.classList.remove('idle');
+            if (bar.dataset.voice === '1') {
+              // voice survives: settle to a clean, steady height
+              gsap.to(bar, {
+                scaleY: 0.55 + Math.random() * 0.15,
+                duration: 0.35,
+                ease: 'back.out(2)',
+              });
+            } else {
+              // noise gets smashed apart into falling shards
+              shatterBar(bar);
+            }
+          }
+        });
+      },
+    });
 
-  // finally, split what's left of the voice row apart — left half slides left, right half slides right
-  // starts at the SAME instant PUREVOX begins appearing, not after
-  const survivors = bars.filter((b) => b.dataset.voice === '1');
-  const mid = survivors.length / 2;
-  const leftHalf = survivors.slice(0, Math.ceil(mid));
-  const rightHalf = survivors.slice(Math.ceil(mid));
+    tl.to(blade, { opacity: 0, duration: 0.25 }, '-=0.1');
 
-  tl.to(
-    leftHalf,
-    { x: '-=140', opacity: 0, duration: 0.7, ease: 'power2.in', stagger: 0.015 },
-    'reveal'
-  );
-  tl.to(
-    rightHalf,
-    { x: '+=140', opacity: 0, duration: 0.7, ease: 'power2.in', stagger: -0.015 },
-    'reveal'
-  );
+    tl.addLabel('reveal');
 
-  return tl;
+    // wordmark letters rise into place, voice-colored letters (U, V) already styled via CSS
+    tl.to(
+      wordmarkLetters,
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: 'back.out(1.7)',
+        stagger: 0.045,
+      },
+      'reveal'
+    );
+
+    tl.to('#tagline', { opacity: 1, duration: 0.6, ease: 'power1.out' }, 'reveal+=0.2');
+    tl.to('#hero-actions', { opacity: 1, duration: 0.6, ease: 'power1.out' }, 'reveal+=0.35');
+    tl.to('#scroll-cue', { opacity: 1, duration: 0.6 }, 'reveal+=0.35');
+
+    // finally, split what's left of the voice row apart — left half slides left, right half slides right
+    // starts at the SAME instant PUREVOX begins appearing, not after
+    const survivors = bars.filter((b) => b.dataset.voice === '1');
+    const mid = survivors.length / 2;
+    const leftHalf = survivors.slice(0, Math.ceil(mid));
+    const rightHalf = survivors.slice(Math.ceil(mid));
+
+    tl.to(
+      leftHalf,
+      { x: '-=140', opacity: 0, duration: 0.7, ease: 'power2.in', stagger: 0.015 },
+      'reveal'
+    );
+    tl.to(
+      rightHalf,
+      { x: '+=140', opacity: 0, duration: 0.7, ease: 'power2.in', stagger: -0.015 },
+      'reveal'
+    );
+
+    return tl;
+  } catch (err) {
+    // The animation blew up after hiding the hero — never leave it blank.
+    console.error('purevox intro animation failed:', err);
+    showHeroInstantly();
+  }
 }
 
 if (document.readyState === 'loading') {
@@ -178,10 +209,18 @@ if (document.readyState === 'loading') {
   runIntro();
 }
 
+// Failsafe: if the intro hasn't taken control within ~2s (GSAP CDN blocked,
+// script crashed before runIntro), force-show the hero — the Download
+// button must never end up permanently invisible.
+setTimeout(() => {
+  if (!introStarted) showHeroInstantly();
+}, 2000);
+
 // ---------- Fade the scroll cue once the user actually scrolls ----------
 window.addEventListener(
   'scroll',
   () => {
+    if (typeof gsap === 'undefined') return;
     gsap.to('#scroll-cue', { opacity: 0, duration: 0.3 });
   },
   { once: true }
