@@ -38,9 +38,9 @@
   <div class="nav-inner">
     <a href="/purevox/"><span class="logo-mark">PV</span></a>
     <nav class="nav-links">
-      <a href="/purevox/#how">How it works</a>
-      <a href="/purevox/#features">Features</a>
-      <a href="guides/remove-background-music.html">Guide</a>
+      <a href="/purevox/#how" class="nl-sm-hide">How it works</a>
+      <a href="/purevox/#features" class="nl-sm-hide">Features</a>
+      <a href="guides/remove-background-music.html" class="nl-xs-hide">Guide</a>
       <a href="docs.html">Docs</a>
       <a href="/purevox/#download" class="nav-cta">Download</a>
     </nav>
@@ -212,6 +212,7 @@ purevox -q 3 -i in1.mp4 in2.mp4 in3.mp4 in4.mp4 -o clean/</code></pre>
   <p>Overrides the automatic chunk length (minutes). Warns and asks for confirmation first if the value looks unsafe for your detected RAM/VRAM.</p>
 
   <h2>All flags</h2>
+  <div class="table-scroll">
   <table class="flag-table">
     <tr><th>Short</th><th>Long</th><th>Description</th></tr>
     <tr><td>-h</td><td>--help</td><td>Show usage and exit</td></tr>
@@ -228,9 +229,11 @@ purevox -q 3 -i in1.mp4 in2.mp4 in3.mp4 in4.mp4 -o clean/</code></pre>
     <tr><td>-x</td><td>--delete</td><td>Delete pending job(s), by id or interactively, or <code>all</code></td></tr>
     <tr><td>-c</td><td>--chunk</td><td>Force a chunk size in minutes instead of automatic</td></tr>
   </table>
+  </div>
 
   <h2>How the model/chunk size is picked</h2>
   <p>On every run purevox detects RAM (<code>free -g</code>) and GPU VRAM (<code>nvidia-smi</code>, 0 if no NVIDIA GPU) and picks a model + chunk length automatically:</p>
+  <div class="table-scroll">
   <table class="flag-table">
     <tr><th>Hardware</th><th>Model</th><th>Chunking</th></tr>
     <tr><td>GPU VRAM ≥ 4GB</td><td>htdemucs</td><td>full file (60min chunks if forced)</td></tr>
@@ -241,6 +244,7 @@ purevox -q 3 -i in1.mp4 in2.mp4 in3.mp4 in4.mp4 -o clean/</code></pre>
     <tr><td>RAM ≥ 4GB</td><td>hdemucs_mmi</td><td>~5min chunks (chunked)</td></tr>
     <tr><td>RAM &lt; 4GB</td><td>hdemucs_mmi</td><td>~3min chunks (chunked)</td></tr>
   </table>
+  </div>
   <div class="note-box">Heuristic, not exact science — override with <code>-c</code>/<code>--chunk</code> if it picks wrong for your machine. Chunking exists to keep memory use safe on low-spec hardware, not to speed things up.</div>
 
   <h2>Job state & resume</h2>

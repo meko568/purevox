@@ -24,6 +24,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
@@ -523,6 +524,7 @@ section { padding: 120px 32px; }
   border-radius: 8px;
   padding: 18px 20px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 18px;
 }
 .docs-page pre code { background: none; padding: 0; color: var(--text-hi); }
@@ -562,7 +564,8 @@ section { padding: 120px 32px; }
 .tab-btn.active { color: var(--voice); border-color: var(--voice-dim); }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
-.flag-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.flag-table { width: 100%; min-width: 540px; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
 .flag-table th, .flag-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); }
 .flag-table th { color: var(--voice); font-family: var(--font-display); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
 .flag-table td:first-child { font-family: var(--font-display); color: var(--text-hi); white-space: nowrap; }
@@ -682,11 +685,31 @@ section { padding: 120px 32px; }
   .download-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* NAV COLLAPSE — shrink gaps first, then drop secondary links, keep Guide/Docs/Download */
+@media (max-width: 860px) {
+  .nav-links { gap: 20px; font-size: 13.5px; }
+}
+@media (max-width: 700px) {
+  .nav-inner { padding: 0 20px; }
+  .nav-links { gap: 16px; }
+  .nl-sm-hide { display: none; }
+  .nav-cta { padding: 7px 12px; }
+}
+@media (max-width: 420px) {
+  .nl-xs-hide { display: none; }
+  .footer { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+}
+
+/* FILE ROWS stack a bit earlier than the small-phone breakpoint */
+@media (max-width: 560px) {
+  .file-row { flex-direction: column; align-items: flex-start; row-gap: 6px; }
+  .file-row .fr-get { margin-left: 0; }
+}
+
 /* PHONE / SMALL TABLET */
 @media (max-width: 720px) {
   section { padding: 64px 20px; }
   body { font-size: 16px; }
-  .nav-links { font-size: 15px; }
   .tagline { font-size: 17px; }
   .steps { grid-template-columns: 1fr; gap: 28px; }
   .step h3 { font-size: 21px; }
@@ -723,20 +746,18 @@ section { padding: 120px 32px; }
   .docs-page h2 { font-size: 23px; }
   .docs-page h3 { font-size: 18px; }
   .flag-table { font-size: 15px; }
+  .docs-page pre { padding-top: 46px; }
+  .copy-btn { top: 10px; right: 10px; padding: 7px 12px; font-size: 12px; }
 }
 
 /* SMALL PHONE */
 @media (max-width: 480px) {
   .nav-inner { padding: 0 16px; }
-  .nav-links { gap: 14px; font-size: 13.5px; }
-  .nav-links a:not(.nav-cta):not([href="docs.html"]) { display: none; }
   .wordmark { font-size: clamp(32px, 13vw, 52px); }
   .hero-actions { flex-direction: column; width: 100%; padding: 0 24px; }
   .hero-actions .btn { width: 100%; text-align: center; }
   section { padding: 52px 16px; }
   .ram-warning { flex-direction: column; }
   .mobile-colab { padding: 22px 18px; }
-  .file-row { flex-direction: column; align-items: flex-start; }
-  .file-row .fr-get { margin-left: 0; }
   .feedback-card { padding: 26px 16px; }
 }
